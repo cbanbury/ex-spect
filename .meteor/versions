@@ -38,12 +38,14 @@ cfs:worker@0.0.0
 check@1.1.0
 coffeescript@1.0.11
 cosmos:browserify@0.9.4
+d3js:d3@3.5.8
 ddp@1.2.2
 ddp-client@1.2.1
 ddp-common@1.2.2
 ddp-rate-limiter@1.0.0
 ddp-server@1.2.2
 deps@1.0.9
+derelinguo:speck-tackle@0.0.1
 diff-sequence@1.0.1
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
