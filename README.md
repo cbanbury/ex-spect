@@ -1,8 +1,9 @@
-# boilerplate-meteor
-Heroku Compatible Meteor Boilerplate with FlowRouter, Materialize and other default goodies
+# ex-spect
+Simple tool for analysing raw data from Raman spectroscopy.
 
-## Deploy to Heroku
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-Yes. its as easy as clicking the button ;)
-
-Remember to add [session affinity](https://devcenter.heroku.com/articles/session-affinity) to your app once its up and running.
+## Planned Features:
+- Drag and Drop file upload from `.txt` spectral data
+- Preview of all and mean data
+- Optional fluorescent background subtraction using least squares fitting
+- Peak fitting of individual specta
+- PCA analysis of data classes and automated grouping
