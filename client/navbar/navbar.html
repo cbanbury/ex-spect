@@ -1,12 +1,12 @@
 <template name="navbar">
-    <nav>
+    <ul id="slide-out" class="side-nav fixed hide-on-med-and-down">
+          {{>navbar_menu}}
+    </ul>
+    <nav class="hide-on-large-only">
         <div class="nav-wrapper">
-            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                {{>navbar_menu}}
-            </ul>
+            <a href="#" data-activates="mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
 
-            <ul class="side-nav" id="mobile-demo">
+            <ul class="side-nav" id="mobile">
                 {{>navbar_menu}}
             </ul>
         </div>
