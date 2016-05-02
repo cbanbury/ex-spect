@@ -1,5 +1,8 @@
 Template.plot.onRendered(function() {
-    var rawDataURL = 'http://localhost:3000/examples/polystyrene-irug.csv';
+    var rawDataURL = location.protocol + '//' + window.location.hostname + '/examples/polystyrene-irug.csv';
+    if (window.location.port !== 80) {
+        rawDataURL = location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/examples/polystyrene-irug.csv';
+    }
     var xField = 'Wavenumber';
     var yField = 'Intensity';
 

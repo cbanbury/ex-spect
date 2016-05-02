@@ -1,15 +1,9 @@
-Template.upload.onCreated(function() {
-    this.xdata = new ReactiveVar([]);
-    this.ydata = new ReactiveVar([]);
-});
+TempFiles = new Mongo.Collection(null);
 
-Template.upload.helpers({
-    xdata: function() {
-        return Template.instance().xdata.get();
-    },
-    ydata: function() {
-        return Template.instance().ydata.get();
-    }
+Template.upload.onRendered(function(){
+    $(document).ready(function(){
+        $('ul.tabs').tabs();
+    });
 });
 
 Template.upload.events({
@@ -17,25 +11,44 @@ Template.upload.events({
         event.preventDefault();
         var target = event.target;
         var instance = Template.instance();
+        var fileData = TempFiles.findOne({flag: 'single'});
 
-        Spectra.insert({name: target.name.value, x: instance.xdata.get(), y: instance.ydata.get()});
-        FlowRouter.go("");
+        Spectra.insert({name: target.name.value, x: fileData.x, y: fileData.y});
+        FlowRouter.go("home");
     },
-    "change input[type='file']": function() {
+    "submit .save-spectra": function(event) {
+        event.preventDefault();
+        var target = event.target;
+        var instance = Template.instance();
+        var fileData = TempFiles.find({flag: {$exists: false}}).fetch();
+
+        fileData.forEach(function(file) {
+            Spectra.insert({tag: target.tag.value, x: file.x, y: file.y});
+        });
+
+        // FlowRouter.go("pca");
+    },
+    "change .spectra-upload": function() {
         var files = event.target.files;
         var instance = Template.instance();
 
-        Plotly.d3.text(URL.createObjectURL(files[0]), function(err, rawData) {
-            var x = [];
-            var y = [];
-            d3.tsv.parseRows(rawData, function(row) {
-                x.push(+row[0]);
-                y.push(+row[1]);
+        for (i=1; i<files.length; i++) {
+            getFileData(files[i], function(err, x, y) {
+                TempFiles.insert({
+                    x: x,
+                    y: y
+                });
             });
+        }
+        // files.forEach(function(file) {
+        //
+        // });
+    },
+    "change .spectrum-upload": function() {
+        var files = event.target.files;
+        var instance = Template.instance();
 
-            instance.xdata.set(x);
-            instance.ydata.set(y);
-
+        getFileData(files[0], function(err, x, y) {
             var layout = {
                 xaxis: {
                     title: 'Wavenumber (cm / -1)'
@@ -45,22 +58,28 @@ Template.upload.events({
                 }
             };
 
+            TempFiles.insert({
+                x: x,
+                y: y,
+                flag: 'single'
+            });
             Plotly.newPlot('graph', [{mode: 'lines', x: x, y: y}], layout);
         });
-
-        // if (files.length === 1) {
-        //     BlockUI.block();
-        //
-        //     Cloudinary.upload(files, null, function(err, res) {
-        //         BlockUI.unblock();
-        //         if (err) {
-        //             Materialize.toast('Image upload failed. Please try again later.', 4000, 'red');
-        //         }
-        //
-        //         var doc = {};
-        //         doc['images.' + image] = res.url;
-        //         Meteor.call(that.collection + '.update', that.context._id, doc, false);
-        //     });
-        // }
     }
 });
+
+function getFileData(file, callback) {
+    Plotly.d3.text(URL.createObjectURL(file), function(err, rawData) {
+        if (err) {
+            return callback(err);
+        }
+
+        var x = [];
+        var y = [];
+        d3.tsv.parseRows(rawData, function(row) {
+            x.push(+row[0]);
+            y.push(+row[1]);
+        });
+        return callback(null, x, y);
+    });
+}
