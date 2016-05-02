@@ -26,8 +26,6 @@ Template.identify.events({
                 { peak: { $lte: +target.wavenumber_upper.value } },
             ]
         }).fetch();
-        console.log('got here');
-        console.log(item);
         Template.instance().searchResults.set(item);
     }
 });
