@@ -8,3 +8,7 @@ A suite of tools for storing data from Raman spectra and analysing spectra.
 - Peak fitting of individual specta
 - PCA analysis of data classes and automated grouping ([ml-pca](https://www.npmjs.com/package/ml-pca))
 - Functional group matching
+
+# Deployment
+Run your own instance on Heroku instantly by clicking deploy below:
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
