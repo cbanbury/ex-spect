@@ -1,5 +1,5 @@
-# ex-spect
-Simple tool for analysing raw data from Raman spectroscopy.
+# Raman Tools
+A suite of tools for storing data from Raman spectra and analysing spectra.
 
 ## Planned Features:
 - Drag and Drop file upload from `.txt` spectral data
