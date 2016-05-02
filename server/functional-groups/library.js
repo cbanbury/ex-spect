@@ -19,4 +19,10 @@ Meteor.startup(function () {
     library.forEach(function(item) {
         Peaks.update({peak: item.peak}, item, {upsert: true});
     });
+    //
+    // var data = [[1, 2], [3, 4], [5, 6], [1, 2]];
+    // var pca = new PCA(data);
+    //
+    // var projected = pca.project(data, 2);
+    // console.log(projected.getEigenvectors());
 });
