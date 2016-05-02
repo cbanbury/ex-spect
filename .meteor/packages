@@ -44,3 +44,7 @@ mystor:device-detection
 standard-minifier-css
 standard-minifier-js
 ecmascript
+meteorhacks:npm
+
+
+npm-container

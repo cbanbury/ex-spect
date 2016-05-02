@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "sylvester": {
+      "version": "0.0.21",
+      "resolved": "https://registry.npmjs.org/sylvester/-/sylvester-0.0.21.tgz",
+      "from": "sylvester@0.0.21"
+    }
+  }
+}
