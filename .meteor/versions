@@ -51,6 +51,7 @@ ecmascript@0.1.6
 ecmascript-runtime@0.2.6
 ecwyne:mathjs@2.7.0
 ejson@1.0.7
+em0ney:chartjs@1.0.2
 email@1.0.8
 erasaur:meteor-lodash@3.10.1_1
 fastclick@1.0.7
