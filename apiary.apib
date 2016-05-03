@@ -1,0 +1,45 @@
+FORMAT: 1A
+HOST: http://raman.banbury.ch/api/v1
+
+# Raman Tools
+
+Raman Tools provides a simple API allowing further integration to retrieve
+and add spectral data.
+
+## Spectra Collection [/spectra]
+
+### List All Spectra [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "name": "Example spectra",
+                "created_at": "2015-08-05T08:40:51.620Z",
+                "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                "y": [1000, 500, 20, 80000, 90, 16, 2000, 80, 177, 4]
+            }
+        ]
+        
+### Upload New Spectra [POST]
+
++ Request (application/json)
+
+        {
+            "name": "Example spectra",
+            "x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "y": [1000, 500, 20, 80000, 90, 16, 2000, 80, 177, 4]
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /spectra/2
+
+    + Body
+
+            {
+                "name": "Example Spectra",
+                "created_at": "2015-08-05T08:40:51.620Z"
+            }
