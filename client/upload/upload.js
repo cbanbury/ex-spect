@@ -22,11 +22,11 @@ Template.upload.events({
         var instance = Template.instance();
         var fileData = TempFiles.find({flag: {$exists: false}}).fetch();
 
-        fileData.forEach(function(file) {
-            Spectra.insert({tag: target.tag.value, x: file.x, y: file.y});
-        });
+        for (i=1; i<fileData.length; i++) {
+            Spectra.insert({tag: target.tag.value, x: fileData[i].x, y: fileData[i].y});
+        }
 
-        // FlowRouter.go("pca");
+        FlowRouter.go("pca");
     },
     "change .spectra-upload": function() {
         var files = event.target.files;
@@ -40,9 +40,6 @@ Template.upload.events({
                 });
             });
         }
-        // files.forEach(function(file) {
-        //
-        // });
     },
     "change .spectrum-upload": function() {
         var files = event.target.files;
