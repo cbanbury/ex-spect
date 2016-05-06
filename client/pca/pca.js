@@ -10,7 +10,7 @@ Template.pca.helpers({
 
 Template.pca.onRendered(function() {
     var instance = Template.instance();
-    Meteor.call('pca:get', function(err, res) {
+    Meteor.call('pca:get', ['healthy', 'diseased'], function(err, res) {
         if (err) {
             console.log(err);
         }
@@ -24,11 +24,20 @@ Template.pca.onRendered(function() {
                 title: 'PC2'
             }
         };
-        var healthy = res.healthy;
-        var diseased = res.diseased;
-        Plotly.newPlot('pcaPlot', [
-            {x:healthy.x, y:healthy.y, mode:'markers', type: 'scatter', name: 'healthy'},
-            {x:diseased.x, y:diseased.y, mode:'markers', type: 'scatter', name: 'diseased'}
-        ], layout);
+
+        keys = Object.keys(res);
+        var plotData = [];
+
+        for (i=0; i<keys.length; i++) {
+            plotData.push({
+                x: res[keys[i]].x,
+                y: res[keys[i]].y,
+                type: 'scatter',
+                mode:'markers',
+                name: keys[i]
+            });
+        }
+
+        Plotly.newPlot('pcaPlot', plotData, layout);
     });
 });

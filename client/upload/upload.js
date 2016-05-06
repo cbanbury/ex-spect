@@ -21,18 +21,23 @@ Template.upload.events({
         var target = event.target;
         var instance = Template.instance();
         var fileData = TempFiles.find({flag: {$exists: false}}).fetch();
+        toUpload = fileData.length;
 
-        for (i=1; i<fileData.length; i++) {
-            Spectra.insert({tag: target.tag.value, x: fileData[i].x, y: fileData[i].y});
+        for (i=0; i<fileData.length; i++) {
+            Spectra.insert({tag: target.tag.value, x: fileData[i].x, y: fileData[i].y}, function(err, res) {
+                toUpload--;
+
+                if (toUpload === 0) {
+                    FlowRouter.go("pca");
+                }
+            });
         }
-
-        FlowRouter.go("pca");
     },
     "change .spectra-upload": function() {
         var files = event.target.files;
         var instance = Template.instance();
 
-        for (i=1; i<files.length; i++) {
+        for (i=0; i<files.length; i++) {
             getFileData(files[i], function(err, x, y) {
                 TempFiles.insert({
                     x: x,
