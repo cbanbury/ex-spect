@@ -8,9 +8,19 @@ Template.pca.helpers({
     }
 });
 
+Template.pca.events({
+    'blur input': function(event) {
+        doPCA(event.target.value.split(','));
+    }
+});
+
 Template.pca.onRendered(function() {
+    doPCA(["healthy", "diseased"]);
+});
+
+function doPCA(tags) {
     var instance = Template.instance();
-    Meteor.call('pca:get', ['healthy', 'diseased'], function(err, res) {
+    Meteor.call('pca:get', tags, function(err, res) {
         if (err) {
             console.log(err);
         }
@@ -40,4 +50,4 @@ Template.pca.onRendered(function() {
 
         Plotly.newPlot('pcaPlot', plotData, layout);
     });
-});
+}

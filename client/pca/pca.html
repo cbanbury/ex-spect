@@ -5,6 +5,11 @@
                 Demonstration of Principal Component Analysis (PCA) using purely JavaSript.
                 Currently, PCA is run against all spectra in the database (so model evolves with data), but
                 could easily be limited to a subset of the data.
+
+                <div class="input-field col s6">
+                  <input type="text" id="classes" name="classes" class="validate" placeholder="healthy,diseased" required>
+                  <label class="active" for="classes">Tags</label>
+                </div>
             {{else}}
                 <div class="col s12">
                     {{>spinner}}
