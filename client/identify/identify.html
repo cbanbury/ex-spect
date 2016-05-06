@@ -3,30 +3,10 @@
         <div class="row">
             <h4>Search</h4>
             <p>Use this page to quickly identify bond assignments and more in Raman spectra.
-            Enter a wavenumber in the box below or a range of values using the slider to filter
-            the results.</p>
+            Enter a range of wavenumbers and filter the results according to your area of interest.</p>
         </div>
         <div class="row">
             <div class="col s12">
-                <ul class="tabs">
-                    <li class="tab col s3"><a href="#single">Single Wavenumber</a></li>
-                    <li class="tab col s3"><a class="active" href="#range">Wavenunmber Range</a></li>
-                </ul>
-            </div>
-            <div id="single" class="col s12">
-                <form class="wavenumber-search">
-                    <div class="input-field col s12">
-                        <input type="number" id="wavenumber" name="wavenumber" class="validate wavenumber-exact" required>
-                        <label class="active" for="wavenumber">Wavenumber</label>
-                    </div>
-                    <div class="col s2 offset-s8 m2 offset-m10">
-                        <button class="btn waves-effect waves-light wavenumber-search" type="submit" name="action">Search
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div id="range" class="col s12">
                 <form class="wavenumber-range-search">
                     <div class="input-field col s6">
                       <input type="number" id="wavenumber_lower" name="wavenumber_lower" class="validate" required>
@@ -35,6 +15,14 @@
                     <div class="input-field col s6">
                       <input type="number" id="wavenumber_upper" name="wavenumber_upper" class="validate" required>
                       <label class="active" for="wavenumber_upper">Upper</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <select class="filter-results" name="filter_results">
+                            <option value="bonds">Bonds</option>
+                            <option value="bio">Biological</option>
+                            <option value="mineral">Minerals</option>
+                        </select>
+                        <label>Filter Results</label>
                     </div>
                     <div class="col s2 offset-s8 m2 offset-m10">
                         <button class="btn waves-effect waves-light wavenumber-range-search" type="submit" name="action">Search
@@ -47,24 +35,46 @@
         <div class="row">
             <hr>
             <p>Results</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th data-field="id">Wavenumber</th>
-                        <th data-field="name">Assignment</th>
-                        <th data-field="price">Reference</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each searchResults}}
-                        <tr>
-                            <td>{{peak}}</td>
-                            <td>{{{assignment}}}</td>
-                            <td>{{ref}}</td>
-                        </tr>
-                    {{/each}}
-                </tbody>
-            </table>
+            <div class="col s12">
+                <table>
+                    {{#if displayBio}}
+                        <thead>
+                            <tr>
+                                <th data-field="id">Wavenumber</th>
+                                <th data-field="name">Assignment</th>
+                                <th data-field="price">Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each searchResults}}
+                            <tr>
+                                <td>{{peak}}</td>
+                                <td>{{{assignment}}}</td>
+                                <td>{{ref}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    {{/if}}
+                    {{#if displayBonds}}
+                        <thead>
+                            <tr>
+                                <th data-field="id">Wavenumber</th>
+                                <th data-field="name">Assignment</th>
+                                <th data-field="price">Group</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each searchResults}}
+                            <tr>
+                                <td>{{peak.lower}}-{{peak.upper}}</td>
+                                <td>{{{assignment}}}</td>
+                                <td>{{{group}}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    {{/if}}
+                </table>
+            </div>
         </div>
     </div>
 </template>
