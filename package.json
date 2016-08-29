@@ -1,0 +1,23 @@
+{
+  "name": "raman-tools",
+  "version": "0.0.1",
+  "description": "A suite of tools for storing data from Raman spectra and analysing spectra.",
+  "main": "index.js",
+  "dependencies": {
+    "ml-pca": "^1.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbanbury/raman-tools.git"
+  },
+  "author": "carl@banbury.ch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cbanbury/raman-tools/issues"
+  },
+  "homepage": "https://github.com/cbanbury/raman-tools#readme"
+}
