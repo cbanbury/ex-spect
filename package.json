@@ -4,7 +4,10 @@
   "description": "A suite of tools for storing data from Raman spectra and analysing spectra.",
   "main": "index.js",
   "dependencies": {
-    "ml-pca": "^1.1.2"
+    "d3": "^4.2.2",
+    "d3-hexbin": "^0.2.0",
+    "kohonen": "^0.6.0",
+    "meteor-node-stubs": "^0.2.3"
   },
   "devDependencies": {},
   "scripts": {
