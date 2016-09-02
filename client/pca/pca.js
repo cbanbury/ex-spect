@@ -36,10 +36,17 @@ function doPCA(tags) {
         };
         console.log(res)
         Plotly.newPlot('pcaPlot', [{
-            x:res.x,
-            y: res.y,
+            x:res.healthy.x,
+            y: res.healthy.y,
             type: 'scatter',
             mode:'markers'
-        }], layout);
+        },
+        {
+            x:res.diseased.x,
+            y: res.diseased.y,
+            type: 'scatter',
+            mode:'markers'
+        }
+    ], layout);
     });
 }
