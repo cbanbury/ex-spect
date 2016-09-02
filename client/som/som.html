@@ -2,14 +2,15 @@
     <div class="container">
         <div class="row">
             <h3>Self Organising Maps (SOM)</h3>
-            <p>Self organising maps allow visualisation of high dimensional data, similar to PCA plots. The
-            main advantage of using SOM over PCA is the space is filled more efficiently and data presented more intuatively
-            to the reader. This makes life easier, when there are several overlapping clusters.</p>
+            <p>Self organising maps allow visualisation of high dimensional data, similar to PCA plots. SOM uses an artificial neural network (ANN) to look
+               for inherent similarities in the data, and so requires no prior knowledge about the data. The main advantage of using SOM over PCA when presenting data
+               is the space is used much more efficiently. This allows us to see the structure and shape of clusters as well as being more friendly to the reader.
+               This is especially useful when there are several overlapping clusters.</p>
         </div>
         <div class="row">
             <h5>Example: Spatially Grouping Shades of Colour</h5>
             <p>The example below groups shades of colour on a hexagonal grid. This is a simplistic example, so includes only 5 shades of red, 3 shades
-            of green and one of blue. The SOM places the colours on a the grid according to which it decides are most similar. </p>
+            of green and one of blue. The SOM places the colours on a the grid according to which the ANN decides are most similar. </p>
         </div>
         <div class="row">
             <div class="col m6 offset-m3 s12 center-align">
@@ -20,12 +21,12 @@
             <h5>Which Variable Matters?</h5>
             <p>
                 We are normally interested with which variable is defining why the data has clustered how it has. For SOM, this is relatively simple. Each coloured point on
-                the board represents one of our samples. For the example of a colour above, this is a three dimensional vector, such as [255, 0, 0] for red defined in RGB
-                colour space. This means our board is actually made of three colour stacks: red green and blue.
+                the board represents one of our samples. For the example where our samples are simply colours, each colour is defined as a three dimensional vector,
+                such as [255, 0, 0] for red defined in RGB colour space. This means our board is actually made of three colour stacks: red green and blue.
             </p>
             <p>
                 With our samples in the position on the board, we can display their values for each of the three colour dimensions in turn. The image below shows an example
-                for the colour, red. Samples that contribute heavily to this colour are highlighted in yellow. Cells that have a low red value are shown in brown.
+                for red. Samples that contribute heavily to this colour are highlighted in yellow. Cells that have a low red value are shown in brown.
                 For this example, this is trivially obvious. However, if colour is replaced by spectral data then markers responsible for inherent clusters within the
                 data can easily be identified in the same way.
             </p>
