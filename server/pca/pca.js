@@ -2,9 +2,14 @@ Meteor.methods({
     'pca:get': function(classes) {
         import pca from 'ml-pca';
 
-        var foo = new pca([[]]);
+        var spectra = Spectra.find({tag: {$in: ['RCA', 'diseased']}}).fetch();
+        spectra = spectra.map(function(item) {
+            return item.y;
+        });
+        var foo = new pca(spectra);
+        var vectors = foo.getEigenvectors();
 
-        console.log(foo);
+        return {x: vectors[0], y: vectors[1]};
 
         // var data = [];
         // var out = {};

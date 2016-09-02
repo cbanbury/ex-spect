@@ -1,29 +1,26 @@
-Template.som.events({
-    'submit .searchClass': function(event) {
-        event.preventDefault();
-        calculateSom(event.target.classes.value.split(','));
-    }
-});
-
-function calculateSom(classes) {
+Template.somExample.onRendered(function() {
     import Kohonen, {hexagonHelper} from 'kohonen';
+    import _ from 'lodash-fp';
     import d3 from 'd3';
 
-    console.log('got here')
-    spectra = Spectra.find({tag: {$in: classes}}, {fields: {_id: 0, y: 1}}).fetch();
-    data = spectra.map(function(item) {
-        return item.y;
-    });
+    var data = [
+        [255, 0 , 0],
+        [180, 0 , 0],
+        [150, 0 , 0],
+        [80, 0 , 0],
+        [100, 0 , 0],
+        [0, 255, 0],
+        [0, 0, 255],
+        [50, 0, 0],
+        [0, 100, 0],
+        [0, 120, 0]
+    ];
 
     // setup the self organising map
     var hexagonData = hexagonHelper.generateGrid(6, 6);
     const k = new Kohonen({data, neurons: hexagonData});
-    console.log('past constructor')
     k.training();
-    console.log('past training');
     var somData = k.mapping();
-    console.log('got results');
-    console.log(somData);
 
     // the umatrix is a greyscale map that allows automatic visualisations.
     // not using it here to let us define colours based on how they are defined
@@ -117,4 +114,4 @@ function calculateSom(classes) {
             return 'rgb(93, 64, 55)';
        })
        .attr('stroke', '#ccc');
-};
+});
