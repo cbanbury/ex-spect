@@ -44,9 +44,5 @@ mystor:device-detection
 standard-minifier-css@1.2.0
 standard-minifier-js@1.2.0
 ecmascript@0.5.8
-meteorhacks:npm
-
-
-npm-container
 sacha:spin
 shell-server
