@@ -47,3 +47,5 @@ useraccounts:core
 useraccounts:materialize
 useraccounts:flow-routing
 ongoworks:security
+tmeasday:publish-counts
+miguelalarcos:flow-router-pagination

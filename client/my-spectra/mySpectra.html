@@ -1,7 +1,7 @@
 <template name="mySpectra">
     <div class="row">
     {{#each spectra}}
-        <div class="col s12 m6">
+        <div class="col s12 m4">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">{{name}} ({{file_meta.name}})</span>
@@ -15,4 +15,5 @@
             </div>
     {{/each}}
     </div>
+    {{> paginationBar itemsPerPage=10 window=5 count='total_spectra'}}
 </template>
