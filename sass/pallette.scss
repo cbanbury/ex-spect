@@ -8,3 +8,9 @@ $secondary-text-color: #727272;
 $secondary-color:      #7e57c2;
 $success-color:        #7e57c2;
 $divider-color:        #B6B6B6;
+
+$off-white:            #eeeeee;
+$sidenav-bg-color: $off-white !default;
+$card-bg-color: $off-white !default;
+$card-link-color: $primary-color !default;
+$card-link-color-light: lighten($card-link-color, 20%) !default;
