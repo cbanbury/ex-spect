@@ -13,7 +13,7 @@ Template.upload.events({
         var instance = Template.instance();
         var fileData = TempFiles.findOne({flag: 'single'});
 
-        Meteor.call('spectra:insert', target.name.value, fileData, function(err) {
+        Meteor.call('spectra:insert', target.name.value, null, fileData, function(err) {
             if (err) {
                 Materialize.toast('Unable to upload file. Please try again later.')
             }
@@ -29,7 +29,12 @@ Template.upload.events({
         toUpload = fileData.length;
 
         for (i=0; i<fileData.length; i++) {
-            Spectra.insert({tag: target.tag.value, x: fileData[i].x, y: fileData[i].y}, function(err, res) {
+            Meteor.call('spectra:insert', null, target.tag.value, fileData[i], function(err) {
+                if (err) {
+                    Materialize.toast('Unable to upload from batch. Please try again later.');
+                    FlowRouter.go("mySpectra");
+                }
+
                 toUpload--;
 
                 if (toUpload === 0) {
@@ -43,10 +48,11 @@ Template.upload.events({
         var instance = Template.instance();
 
         for (i=0; i<files.length; i++) {
-            getFileData(files[i], function(err, x, y) {
+            getFileData(files[i], function(err, x, y, fileMeta) {
                 TempFiles.insert({
                     x: x,
-                    y: y
+                    y: y,
+                    file_meta: fileMeta
                 });
             });
         }

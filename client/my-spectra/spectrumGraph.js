@@ -2,7 +2,7 @@
 Template.spectrumGraph.onRendered(function() {
     var layout = {
         autosize: false,
-        width: 400,
+        width: 350,
         height: 250,
         xaxis: {
             title: 'Wavenumber (cm / -1)'
