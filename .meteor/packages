@@ -4,8 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-insecure
-autopublish
 accounts-password@1.3.0
 alanning:roles
 erasaur:meteor-lodash
@@ -19,7 +17,7 @@ mobile-experience@1.0.4
 mongo
 blaze-html-templates@1.0.4
 session@1.1.6
-jquery@1.11.9
+jquery
 tracker@1.1.0
 logging@1.1.15
 reload@1.1.10
@@ -45,3 +43,7 @@ standard-minifier-css@1.2.0
 ecmascript
 sacha:spin
 shell-server
+useraccounts:core
+useraccounts:materialize
+useraccounts:flow-routing
+ongoworks:security

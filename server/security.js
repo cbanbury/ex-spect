@@ -1,0 +1,1 @@
+Spectra.permit('insert').ifLoggedIn();

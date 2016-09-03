@@ -13,8 +13,13 @@ Template.upload.events({
         var instance = Template.instance();
         var fileData = TempFiles.findOne({flag: 'single'});
 
-        Spectra.insert({name: target.name.value, x: fileData.x, y: fileData.y});
-        FlowRouter.go("home");
+        Meteor.call('spectra:insert', target.name.value, fileData, function(err) {
+            if (err) {
+                Materialize.toast('Unable to upload file. Please try again later.')
+            }
+            FlowRouter.go("mySpectra");
+        });
+
     },
     "submit .save-spectra": function(event) {
         event.preventDefault();
@@ -28,7 +33,7 @@ Template.upload.events({
                 toUpload--;
 
                 if (toUpload === 0) {
-                    FlowRouter.go("pca");
+                    FlowRouter.go("mySpectra");
                 }
             });
         }
@@ -49,8 +54,7 @@ Template.upload.events({
     "change .spectrum-upload": function() {
         var files = event.target.files;
         var instance = Template.instance();
-
-        getFileData(files[0], function(err, x, y) {
+        getFileData(files[0], function(err, x, y, fileMeta) {
             var layout = {
                 xaxis: {
                     title: 'Wavenumber (cm / -1)'
@@ -63,6 +67,7 @@ Template.upload.events({
             TempFiles.insert({
                 x: x,
                 y: y,
+                file_meta: fileMeta,
                 flag: 'single'
             });
             Plotly.newPlot('graph', [{mode: 'lines', x: x, y: y}], layout);
@@ -78,10 +83,11 @@ function getFileData(file, callback) {
 
         var x = [];
         var y = [];
+
         d3.tsv.parseRows(rawData, function(row) {
             x.push(+row[0]);
             y.push(+row[1]);
         });
-        return callback(null, x, y);
+        return callback(null, x, y, {name: file.name, lastModified: file.lastModified});
     });
 }
