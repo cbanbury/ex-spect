@@ -34,20 +34,27 @@ function doPCA(tags) {
                 title: 'PC2'
             }
         };
-
-        keys = Object.keys(res);
-        var plotData = [];
-
-        for (i=0; i<keys.length; i++) {
-            plotData.push({
-                x: res[keys[i]].x,
-                y: res[keys[i]].y,
-                type: 'scatter',
-                mode:'markers',
-                name: keys[i]
-            });
+        console.log(res)
+        Plotly.newPlot('pcaPlot', [{
+            x:res.healthy.x,
+            y: res.healthy.y,
+            type: 'scatter',
+            mode:'markers',
+            marker: {
+                size: 12,
+                opacity: 0.8
+            }
+        },
+        {
+            x:res.diseased.x,
+            y: res.diseased.y,
+            type: 'scatter',
+            mode:'markers',
+            marker: {
+                size: 12,
+                opacity: 0.8
+            }
         }
-
-        Plotly.newPlot('pcaPlot', plotData, layout);
+    ], layout);
     });
 }

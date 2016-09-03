@@ -1,59 +1,31 @@
-Template.som.events({
-    'submit .searchClass': function(event) {
-        event.preventDefault();
-        calculateSom(event.target.classes.value.split(','));
-    }
-});
-
-Template.som.onRendered(function() {
-    this.percentTrained = new ReactiveVar();
-    Meteor.subscribe('spectra', function() {
-        calculateSom();
-    });
-});
-
-function calculateSom(percentTrained) {
+Template.somExample.onRendered(function() {
     import Kohonen, {hexagonHelper} from 'kohonen';
+    import _ from 'lodash-fp';
     import d3 from 'd3';
 
-    var spectra = Spectra.find().fetch();
-    var data = spectra.map(function(item) {
-        return item.y;
-    });
-
-    // var data = [
-    //     [255, 0 , 0],
-    //     [180, 0 , 0],
-    //     [150, 0 , 0],
-    //     [80, 0 , 0],
-    //     [100, 0 , 0],
-    //     [0, 255, 0],
-    //     [0, 0, 255],
-    //     [50, 0, 0],
-    //     [0, 100, 0],
-    //     [0, 120, 0]
-    // ];
+    var data = [
+        [255, 0 , 0],
+        [180, 0 , 0],
+        [150, 0 , 0],
+        [80, 0 , 0],
+        [100, 0 , 0],
+        [0, 255, 0],
+        [0, 0, 255],
+        [50, 0, 0],
+        [0, 100, 0],
+        [0, 120, 0]
+    ];
 
     // setup the self organising map
-    var hexagonData = hexagonHelper.generateGrid(10, 10);
-    const k = new Kohonen({data, neurons: hexagonData, maxStep: 50000});
-    console.log('Starting training')
-    var start = new Date().getTime();
-    var percent = 100 / 2000;
-    k.training(function() {
-        percent = percent + (100 / 2000);
-        console.log('step complete')
-    });
-    var end = new Date().getTime();
-    console.log('past training in: ' + (end-start)/1000);
+    var hexagonData = hexagonHelper.generateGrid(6, 6);
+    const k = new Kohonen({data, neurons: hexagonData});
+    k.training();
     var somData = k.mapping();
-    console.log('got results');
-    console.log(somData);
 
     // the umatrix is a greyscale map that allows automatic visualisations.
     // not using it here to let us define colours based on how they are defined
     // in the data.
-    // var umatrix = k.umatrix();
+    var umatrix = k.umatrix();
 
     // scale up the hexagons so we can visualise it on screen
     const stepX = 25;
@@ -70,8 +42,8 @@ function calculateSom(percentTrained) {
         bottom: 0,
         left: 10
     },
-    width = 800,
-    height = 800;
+    width = 300,
+    height = 200;
 
     //Create SVG element
     var svg = d3.select("#chart").append("svg")
@@ -106,7 +78,7 @@ function calculateSom(percentTrained) {
 
             // set colour to match the RGB value from the datas
             if (foo) {
-                return 'rgb(255, 0, 0)';
+                return 'rgb(' + data[index][0] + ',' + data[index][1] + ',' + data[index][2] + ')';
             }
             return 'rgb(255, 255, 255)';
        })
@@ -142,4 +114,4 @@ function calculateSom(percentTrained) {
             return 'rgb(93, 64, 55)';
        })
        .attr('stroke', '#ccc');
-};
+});
