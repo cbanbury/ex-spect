@@ -39,13 +39,21 @@ function doPCA(tags) {
             x:res.healthy.x,
             y: res.healthy.y,
             type: 'scatter',
-            mode:'markers'
+            mode:'markers',
+            marker: {
+                size: 12,
+                opacity: 0.8
+            }
         },
         {
             x:res.diseased.x,
             y: res.diseased.y,
             type: 'scatter',
-            mode:'markers'
+            mode:'markers',
+            marker: {
+                size: 12,
+                opacity: 0.8
+            }
         }
     ], layout);
     });

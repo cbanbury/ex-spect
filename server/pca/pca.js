@@ -14,7 +14,7 @@ Meteor.methods({
         });
 
         var total = healthy.concat(diseased);
-        var pca = new PCA(total);
+        var pca = new PCA(total, {scale: true});
         var vectors = pca.getEigenvectors();
 
         var healthyOut = {
