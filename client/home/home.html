@@ -1,10 +1,57 @@
 <template name="home">
-    <input type="file" name="pic" multiple>
-    {{numSamples}}
     <div class="container">
         <div class="row">
-            <div class="col s12">
-                <div id="stgraph" class="stgraph"></div>
+            <div class="col s12 m6">
+                <ul class="collection homepage-collection">
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle green">folder</i>
+                    <h5><a href="/spectra">Spectral Data Storage</a></h5>
+                    <p>Upload, organise and analyse spectral data. Choose whether to keep
+                        data private, share with colleagues or the world.
+                    </p>
+                  </li>
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle orange">insert_chart</i>
+                    <h5><a href="/som">Analysis</a></h5>
+                    <p>Look for trends and clusters in your data, using either principal component analysis (PCA) or
+                        self organising maps (SOM). You can choose to let your browser handle the work or offload it to
+                        the cloud.
+                    </p>
+                  </li>
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle red">trending_flat</i>
+                    <h5>Proper Background Subtraction</h5>
+                    <p>Background subtraction using published methods tailored for Raman. There's no black box fitting here,
+                       the source code is open for interrogation.
+                    </p>
+                  </li>
+                </ul>
+            </div>
+            <div class="col s12 m6">
+                <ul class="collection homepage-collection">
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle pink">search</i>
+                    <h5><a href="/identify">Peaks by Wavenumber</a></h5>
+                    <p>Lookup known peaks by single wavenumber to find known associations for
+                        your field.
+                    </p>
+                  </li>
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle teal">business</i>
+                    <h5><a href="/api">Built to Connect</a></h5>
+                        Our RESTful API allows for connection of future applications, such as uploading direct from Raman instruments
+                        or exporting the data to be processed elsewhere.
+                    <p>
+                    </p>
+                  </li>
+                  <li class="collection-item avatar homepage-collection">
+                    <i class="material-icons circle blue">insert_chart</i>
+                    <h5><a href="https://github.com/cbanbury/raman-tools">Open Source</a></h5>
+                    <p>This site is free to use and entirely open source. The aim is to provide a transparent mechanism to publish
+                       exactly how data has been processed, along with the raw data itself. Pull requests welcome.
+                    </p>
+                  </li>
+                </ul>
             </div>
         </div>
     </div>

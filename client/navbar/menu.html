@@ -1,4 +1,8 @@
 <template name="navbar_menu">
+    {{#if currentUser}}
+        <li><a href="" class="logout">Sign Out</a></li>
+        <hr>
+    {{/if}}
     <li class="{{activeIfNameIs 'home'}}"><a href="/">Home</a></li>
     <li class="{{activeIfNameIs 'identify'}}"><a href="/identify">Identify Peaks</a></li>
     <li class="{{activeIfNameIs 'pca'}}"><a href="/pca">PCA</a></li>

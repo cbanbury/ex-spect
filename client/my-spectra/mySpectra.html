@@ -1,19 +1,30 @@
 <template name="mySpectra">
-    <div class="row">
-    {{#each spectra}}
-        <div class="col s12 m4">
-            <div class="card">
-                <div class="card-content">
-                    <span class="card-title">{{name}} ({{file_meta.name}})</span>
-                        {{>spectrumGraph x=x y=y id=_id}}
-                    </div>
-                    <div class="card-action">
-                        <a href="#">View</a>
-                        <a href="#">Delete</a>
+    <div class="container">
+        <div class="row">
+            <form>
+              <div class="input-field">
+                <input id="search" type="search" required>
+                <label for="search"><i class="material-icons">search</i></label>
+                <i class="material-icons">close</i>
+              </div>
+            </form>
+        </div>
+        <div class="row">
+        {{#each spectra}}
+            <div class="col s12 m6">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">{{name}} ({{file_meta.name}})</span>
+                            {{>spectrumGraph x=x y=y id=_id}}
+                        </div>
+                        <div class="card-action">
+                            <a href="#">View</a>
+                            <a href="#">Delete</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-    {{/each}}
+        {{/each}}
+        </div>
+        {{> paginationBar itemsPerPage=10 window=5 count='total_spectra'}}
     </div>
-    {{> paginationBar itemsPerPage=10 window=5 count='total_spectra'}}
 </template>
