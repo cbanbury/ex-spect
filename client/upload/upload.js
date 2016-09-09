@@ -7,41 +7,24 @@ Template.upload.onRendered(function(){
 });
 
 Template.upload.events({
-    "submit .save-spectrum": function(event) {
-        event.preventDefault();
-        var target = event.target;
-        var instance = Template.instance();
-        var fileData = TempFiles.findOne({flag: 'single'});
-
-        Meteor.call('spectra:insert', target.name.value, null, fileData, function(err) {
-            if (err) {
-                Materialize.toast('Unable to upload file. Please try again later.')
-            }
-            FlowRouter.go("mySpectra");
-        });
-
-    },
     "submit .save-spectra": function(event) {
         event.preventDefault();
         var target = event.target;
         var instance = Template.instance();
         var fileData = TempFiles.find({flag: {$exists: false}}).fetch();
-        toUpload = fileData.length;
 
-        for (i=0; i<fileData.length; i++) {
-            Meteor.call('spectra:insert', null, target.tag.value, fileData[i], function(err) {
+        fileData.forEach(function(item) {
+            item.tag = target.tag.value;
+            item.uid = Meteor.userId();
+            item.created_at = new Date()
+            Spectra.insert(item, function(err) {
                 if (err) {
-                    Materialize.toast('Unable to upload from batch. Please try again later.');
-                    FlowRouter.go("mySpectra");
-                }
-
-                toUpload--;
-
-                if (toUpload === 0) {
-                    FlowRouter.go("mySpectra");
+                    console.log(err);
+                    console.log(Meteor.userId())
                 }
             });
-        }
+        });
+        FlowRouter.go("mySpectra");
     },
     "change .spectra-upload": function() {
         var files = event.target.files;
@@ -56,28 +39,6 @@ Template.upload.events({
                 });
             });
         }
-    },
-    "change .spectrum-upload": function() {
-        var files = event.target.files;
-        var instance = Template.instance();
-        getFileData(files[0], function(err, x, y, fileMeta) {
-            var layout = {
-                xaxis: {
-                    title: 'Wavenumber (cm / -1)'
-                },
-                yaxis: {
-                    title: 'Intensity'
-                }
-            };
-
-            TempFiles.insert({
-                x: x,
-                y: y,
-                file_meta: fileMeta,
-                flag: 'single'
-            });
-            Plotly.newPlot('graph', [{mode: 'lines', x: x, y: y}], layout);
-        });
     }
 });
 

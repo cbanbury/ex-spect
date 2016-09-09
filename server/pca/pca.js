@@ -7,6 +7,7 @@ Meteor.methods({
         classes.forEach(function(className) {
             temp = Spectra.find({uid: Meteor.userId(), tag: className}).fetch();
             groups[className] = temp.map(function(item) {
+                console.log(item.y.length);
                 return item.y;
             });
             pcaInput = pcaInput.concat(groups[className]);
