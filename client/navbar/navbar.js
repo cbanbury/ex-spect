@@ -7,5 +7,22 @@ Template.navbar.rendered = function() {
         closeOnClick: true
     });
 
-    $('ul.tabs').tabs();
+    $('ul.tabs').tabs({
+    	onShow: function(param) {
+    		if (param.selector === '#projects') {
+    			console.log('doing the thing')
+    			FlowRouter.go('projects');
+    		} else {
+    			FlowRouter.go('home');
+    		}
+    	}
+    });
 };
+
+Template.navbar.helpers({
+    isActive: function(name) {
+        if (FlowRouter.getRouteName() === name) {
+            return "active";
+        }
+    }
+});

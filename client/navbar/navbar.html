@@ -8,23 +8,20 @@
       </ul>
     </div>
 
-    {{#if currentUser}}
-        <div class="nav-content">
-          <ul class="tabs tabs-transparent">
-            <li class="tab"><a href="#Projects">Projects</a></li>
-            <li class="tab"><a href="#test2">Test 2</a></li>
-          </ul>
-        </div>
-    {{/if}}
-  </nav>
- 
-  {{#if currentUser}}
-    <div class="main">
-        <div id="Projects" class="col s12">My Projects</div>
-    </div>
-  {{else}}
-    <div class="main">
-        {{> Template.dynamic template=main}}
-    </div>
-  {{/if}}
+    <div class="nav-content">
+      <ul class="tabs tabs-transparent">
+        <li class="tab"><a href="#search">Peak Search</a></li>
+        <li class="tab"><a class="{{isActive 'projects'}}" href="#projects">Projects</a></li>
+        
+        <li class="tab"><a href="#learn">Machine Learning</a></li>
+        <li class="tab"><a href="#api">API</a></li>
+    </ul>
+</div>
+</nav>
+  <div clas="main" style="padding-top: 20px;">
+    <div id="projects" class="col s12">{{>Template.dynamic template=main}}</div>
+    <div id="search" class="col s12">{{>Template.dynamic template=main}}</div>
+    <div id="learn" class="col s12">{{>Template.dynamic template=main}}</div>
+    <div id="api" class="col s12">{{>Template.dynamic template=main}}</div>
+  </div>
 </template>
