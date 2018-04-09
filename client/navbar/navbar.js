@@ -21,7 +21,7 @@ Template.navbar.rendered = function() {
 
 Template.navbar.helpers({
     isActive: function(name) {
-        if (FlowRouter.getRouteName() === name) {
+        if (FlowRouter.current().route.group.name === name) {
             return "active";
         }
     }
