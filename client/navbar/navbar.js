@@ -6,4 +6,6 @@ Template.navbar.rendered = function() {
     $(".button-collapse").sideNav({
         closeOnClick: true
     });
+
+    $('ul.tabs').tabs();
 };

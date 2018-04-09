@@ -1,13 +1,30 @@
 <template name="navbar">
-    <ul id="slide-out" class="side-nav fixed hide-on-med-and-down">
-          {{>navbar_menu}}
-    </ul>
-    <nav class="hide-on-large-only">
-        <div class="nav-wrapper">
-            <ul class="side-nav" id="mobile">
-                {{>navbar_menu}}
-            </ul>
-            <a href="#" data-activates="mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+  <nav class="nav-extended">
+    <div class="nav-wrapper">
+
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="#" class="brand-logo center">Raman Toolkit</a></li>
+        {{>atNavButton}}
+      </ul>
+    </div>
+
+    {{#if currentUser}}
+        <div class="nav-content">
+          <ul class="tabs tabs-transparent">
+            <li class="tab"><a href="#Projects">Projects</a></li>
+            <li class="tab"><a href="#test2">Test 2</a></li>
+          </ul>
         </div>
-    </nav>
+    {{/if}}
+  </nav>
+ 
+  {{#if currentUser}}
+    <div class="main">
+        <div id="Projects" class="col s12">My Projects</div>
+    </div>
+  {{else}}
+    <div class="main">
+        {{> Template.dynamic template=main}}
+    </div>
+  {{/if}}
 </template>
