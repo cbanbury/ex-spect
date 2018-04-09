@@ -1,9 +1,21 @@
 TempFiles = new Mongo.Collection(null);
 
 Template.upload.onRendered(function(){
-    $(document).ready(function(){
-        $('ul.tabs').tabs();
-    });
+    $('ul.tabs').tabs();
+    $('select').material_select();
+
+    Template.instance().dataLabels.set(this.data.labels);
+});
+
+Template.upload.onCreated(function() {
+    this.dataLabels = new ReactiveVar();
+});
+
+Template.upload.helpers({
+    labels: function() {
+        console.log(Template.instance().dataLabels.get())
+        return Template.instance().dataLabels.get();
+    }
 });
 
 Template.upload.events({

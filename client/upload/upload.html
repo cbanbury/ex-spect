@@ -8,11 +8,13 @@
                             class later in the <a href="/pca">analysis</a> section.
                         </p>
                     </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <input id="tag" type="text">
-                            <label for="tag">Tag (class)</label>
-                        </div>
+                    <div class="input-field col s12">
+                      <select>
+                        {{#each labels}}
+                            <option value="{{tag}}">{{tag}}</option>
+                        {{/each}}
+                      </select>
+                      <label>Label</label>
                     </div>
                     <div class="file-field input-field">
                         <div class="btn">
