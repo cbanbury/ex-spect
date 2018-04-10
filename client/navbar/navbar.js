@@ -7,21 +7,23 @@ Template.navbar.rendered = function() {
         closeOnClick: true
     });
 
+    var name = FlowRouter.current().route.group.name;
     $('ul.tabs').tabs({
     	onShow: function(param) {
     		if (param.selector === '#projects') {
-    			console.log('doing the thing')
     			FlowRouter.go('projects');
     		} else {
     			FlowRouter.go('home');
     		}
     	}
     });
+
+    // $('ul.tabs').tabs('select_tab', FlowRouter.current().route.group.name);
 };
 
 Template.navbar.helpers({
     isActive: function(name) {
-        if (FlowRouter.current().route.group.name === name) {
+        if (FlowRouter.current().route.group.name === name || FlowRouter.current().route.group.parent.name === name) {
             return "active";
         }
     }

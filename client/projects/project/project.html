@@ -1,0 +1,43 @@
+<template name="project">
+	<div class="container">
+		{{>breadcrumbs crumbs=crumbs}}
+		<div class="section">
+			<div class="row">
+				<div class="col s3">
+					<a class="waves-effect waves-light btn project-settings">Settings</a>
+				</div>
+			</div>
+		</div>
+		<div class='divider'></div>
+		<div class="section">
+			<div class="row">
+				<div class="col s3">
+					<h5>Spectra</h5>
+				</div>
+			</div>
+			<ul class="collapsible" data-collapsible="accordion">
+			{{#each project.labels}}
+				<li>
+					<div class="collapsible-header"><strong>{{tag}}</strong></div>
+					<div class="collapsible-body">
+						<div class="row">
+							<div class="col s4">
+								<a class="waves-effect waves-light btn upload-data">Add Data</a>
+							</div>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<th>Select</th>
+									<th>Filename</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+				</li>
+			{{/each}}
+			</ul>
+		</div>
+	</div>
+</template>

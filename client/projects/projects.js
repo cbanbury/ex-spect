@@ -9,8 +9,8 @@ Template.projects.events({
 	'click .delete-project': function() {
 		Meteor.call('projects:remove', this._id);
 	},
-	'click .edit-project': function() {
-		FlowRouter.go('editProject', {id: this._id});
+	'click .view-project': function() {
+		FlowRouter.go('project', {id: this._id});
 	}
 })
 

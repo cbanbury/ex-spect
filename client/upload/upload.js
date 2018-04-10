@@ -1,20 +1,40 @@
 TempFiles = new Mongo.Collection(null);
 
 Template.upload.onRendered(function(){
-    $('ul.tabs').tabs();
-    $('select').material_select();
-
-    Template.instance().dataLabels.set(this.data.labels);
+    TempFiles.remove();
 });
 
 Template.upload.onCreated(function() {
-    this.dataLabels = new ReactiveVar();
+    this.autorun(() => {
+      this.subscribe('project', FlowRouter.getParam("id"));
+    });
 });
+
 
 Template.upload.helpers({
     labels: function() {
-        console.log(Template.instance().dataLabels.get())
-        return Template.instance().dataLabels.get();
+        return Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}).labels;
+    },
+    crumbs: function() {
+        var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
+        return [
+            {
+                path: '/projects',
+                title: 'Projects'
+            },
+            {
+                path: '/projects/' + project._id,
+                title: project.name
+            },
+            {
+                path: '',
+                title: FlowRouter.getQueryParam('label')
+            },
+            {
+                path: '',
+                title: 'Upload'
+            }
+        ]
     }
 });
 
@@ -26,8 +46,9 @@ Template.upload.events({
         var fileData = TempFiles.find({flag: {$exists: false}}).fetch();
 
         fileData.forEach(function(item) {
-            item.tag = target.tag.value;
+            item.label = FlowRouter.getQueryParam('label');
             item.uid = Meteor.userId();
+            item.projectId = FlowRouter.getParam("id");
             item.created_at = new Date()
             Spectra.insert(item, function(err) {
                 if (err) {
