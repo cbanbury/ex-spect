@@ -1,5 +1,20 @@
 <template name="master_layout">
     <!-- <a class="github-fork-ribbon left-top" href="https://github.com/cbanbury/raman-tools" title="Fork me on GitHub">Fork me on GitHub</a> -->
+    {{#if currentUser}}
     {{>navbar}}
+    {{else}}
+	    <nav class="nav-extended">
+	    	<div class="nav-wrapper">
+
+	    		<ul id="nav-mobile" class="right hide-on-med-and-down">
+	    			<li><a href="#" class="brand-logo center">Raman Toolkit</a></li>
+	    			{{>atNavButton}}
+	    		</ul>
+	    	</div>
+	    </nav>
+	    <div clas="main" style="padding-top: 20px;">
+	      <div class="col s12">{{>Template.dynamic template=home}}</div>
+	    </div>
+    {{/if}}
     {{>footer}}
 </template>

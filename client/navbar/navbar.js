@@ -17,8 +17,6 @@ Template.navbar.rendered = function() {
     		}
     	}
     });
-
-    // $('ul.tabs').tabs('select_tab', FlowRouter.current().route.group.name);
 };
 
 Template.navbar.helpers({
