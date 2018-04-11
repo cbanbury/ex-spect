@@ -31,7 +31,6 @@ Template.viewer.onCreated(function() {
 });
 
 Template.viewer.onRendered(function(){
-	console.log('template loaded')
 	this.autorun(()=>{
 		if (this.projectSubscription.ready()) {
 			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));

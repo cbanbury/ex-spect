@@ -1,7 +1,7 @@
 TempFiles = new Mongo.Collection(null);
 
 Template.upload.onRendered(function(){
-    TempFiles.remove();
+    TempFiles.remove({});
 });
 
 Template.upload.onCreated(function() {
@@ -54,10 +54,11 @@ Template.upload.events({
                 if (err) {
                     console.log(err);
                     console.log(Meteor.userId())
+                    Materialize.toast('Error uploading some data.', 4000);
                 }
             });
         });
-        FlowRouter.go("mySpectra");
+        FlowRouter.go('/projects/' + FlowRouter.getParam("id"));
     },
     "change .spectra-upload": function() {
         var files = event.target.files;

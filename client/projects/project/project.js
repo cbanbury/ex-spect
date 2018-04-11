@@ -36,7 +36,6 @@ Template.project.events({
 	},
 	'click .view-data': function(event) {
 		FlowRouter.go('plot', {id: FlowRouter.getParam("id")});
-		// console.log(SelectedSpectra.find({label: this.tag}).fetch())
 	}
 });
 
