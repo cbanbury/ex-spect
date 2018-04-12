@@ -10,6 +10,8 @@ Template.som.onRendered(function() {
     Meteor.subscribe('spectra', function() {
         calculateSom();
     });
+
+    $('select').material_select();
 });
 
 function calculateSom(percentTrained) {

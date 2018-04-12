@@ -12,7 +12,9 @@ Template.navbar.rendered = function() {
     	onShow: function(param) {
     		if (param.selector === '#projects') {
     			FlowRouter.go('projects');
-    		} else {
+    		} else if (param.selector === '#learn') {
+                FlowRouter.go('learn');
+            } else {
     			FlowRouter.go('home');
     		}
     	}
@@ -21,7 +23,7 @@ Template.navbar.rendered = function() {
 
 Template.navbar.helpers({
     isActive: function(name) {
-        if (FlowRouter.current().route.group.name === name || FlowRouter.current().route.group.parent.name === name) {
+        if (FlowRouter.current().route.group.name === name) {
             return "active";
         }
     }
