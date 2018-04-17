@@ -2,17 +2,37 @@
     <div class="container">
         <div class="row">
             <div class="col s4">
-                <form>
+                <form class="compute-som">
                     <div class="input-field col s12">
-                      <select>
-                        <option value="" disabled selected>Choose your option</option>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
+                      <select class="project-select" id="projectSelect">
+                        <option value="" disabled selected>Select Project</option>
+                        {{#each projects}}
+                            <option value="{{_id}}">{{name}}</option>
+                        {{/each}}
                       </select>
-                      <label>Materialize Select</label>
+                      <label>Select Project</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <select class="grid-size-select" id="gridSize">
+                          {{#each gridSizes}}
+                              <option value="{{this}}">{{this}}x{{this}}</option>
+                          {{/each}}
+                        </select>
+                        <label>Grid Size</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <div class="chips"></div>
+                        <label>Include Data</label>
+                    </div>
+                    <div class="col s4">
+                        <button class="waves-effect waves-light btn" type="submit">Run</button>
                     </div>
                 </form>
+            </div>
+            <div class="col s8">
+                {{#if somData}}
+                    {{>somPlot results=somData labels=labels gridSize=gridSize}}
+                {{/if}}
             </div>
         </div>
     </div>

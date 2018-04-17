@@ -1,0 +1,29 @@
+<template name="somPlot">
+	<div>
+	  <svg width='100%' height='100%' viewBox='0 0 100 100'>
+	    <defs>
+	      <filter id="glow">
+	        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+	        <feMerge>
+	          <feMergeNode in="coloredBlur"/>
+	          <feMergeNode in="SourceGraphic"/>
+	        </feMerge>
+	      </filter>
+	    </defs>
+	    <g>
+	      {{#each neurons}}
+	      	<path
+	      		d={{generateHexagons pos}}
+	      		key={{@index}}
+	      		style='fill:none; stroke:#000; stroke-width:0.2;'
+	      	/>
+	      {{/each}}
+	    </g>
+	    <g>
+	    	{{#each circles}}
+	    		<circle class="result" cx="{{x}}" cy="{{y}}" r="2.5" fill="{{color}}"></circle>
+	    	{{/each}}
+	    </g>
+	  </svg>
+	</div>
+</template>

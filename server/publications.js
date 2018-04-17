@@ -9,3 +9,7 @@ Meteor.publish("project", function(projectId) {
 Meteor.publish("project:spectra", function(projectId) {
     return Spectra.find({uid: this.userId, projectId: projectId});
 });
+
+Meteor.publish("user:spectra", function() {
+	return Spectra.find({uid: this.userId});
+})
