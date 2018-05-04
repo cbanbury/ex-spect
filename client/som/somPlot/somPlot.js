@@ -2,7 +2,7 @@ import { range } from 'd3-array';
 import { forceCollide, forceSimulation, forceX, forceY } from 'd3-force';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { interpolateSpectral } from 'd3-scale-chromatic';
-import * as d3 from 'd3-selection';
+import * as d3 from 'd3';
 import 'd3-selection-multi';
 import { line } from 'd3-shape';
 import { hexagonHelper } from 'kohonen';
@@ -21,10 +21,17 @@ Template.somPlot.onCreated(function() {
 		.domain(classes)
 		.range([1, 0]);
 
+	this.scaleSize = scaleBand()
+      .domain(classes)
+      .range([10, 10]);
+
 	this.getColor = _.flow(
 		scaleColor,
 		interpolateSpectral,
 	);
+});
+
+Template.somPlot.onRendered(function() {
 });
 
 Template.somPlot.helpers({
@@ -58,6 +65,52 @@ Template.somPlot.helpers({
 		var position = index * 100;
 		return 'translate(' + position + ' 0)'
 	},
+	simulate: function() {
+		var width = 400, height = 400
+
+		console.log('simulating')
+
+		const getX = _.flow(
+		        _.get('[0]'),
+		        _.map(Template.instance().scaleGrid),
+		        _.get('[0]')
+		      );
+
+		      const getY = _.flow(
+		        _.get('[0]'),
+		        _.map(Template.instance().scaleGrid),
+		        _.get('[1]')
+		      );
+
+		var nodes =  Template.instance().data.results;
+
+		var simulation = d3.forceSimulation(nodes)
+		  .force("x", d3.forceX(getX))
+		  .force("y", d3.forceY(getY))
+		  // .force('center', d3.forceCenter(width / 2, height / 2))
+		  .force('collision', d3.forceCollide().radius(function(d) {
+		    return 0.5;
+		  }))
+		  .on('tick', ticked);
+
+		function ticked() {
+		  var u = d3.select('svg')
+		    .selectAll('circle')
+		    .data(nodes)
+
+		  u.enter()
+		    .append('circle')
+		    .attr('r', function(d) {
+		      return 0.5
+		    })
+		    .merge(u)
+		    .attrs({cx: _.get('x'), cy: _.get('y')});
+
+
+		  u.exit().remove()
+		}
+		  
+	},
 	circles: function() {
 		const getX = _.flow(
 			  _.get('[0]'),
@@ -76,7 +129,13 @@ Template.somPlot.helpers({
 		  Template.instance().getColor,
 		);
 
-		var results = Template.instance().data.results;
+		const getSize = _.flow(
+		  _.get('[1].class'),
+		  Template.instance().scaleSize,
+		);
+
+		var results = Template.instance().data.results;		
+
 		return results.map((item)=>{
 			return {
 				x: getX(item),

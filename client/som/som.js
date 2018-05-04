@@ -63,12 +63,19 @@ function calculateSom(spectra, labels, gridSize) {
     import _ from 'lodash/fp';
     import d3 from 'd3';
 
+    var autoSteps = spectra.length * 10;
+
+    var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
+    console.log('Suggested grid size for data: ' + suggestedGridSize);
+
+    console.log('Number of steps to run: ' + autoSteps);
+
     // setup the self organising map
     var neurons = hexagonHelper.generateGrid(gridSize, gridSize);
     const k = new Kohonen({
       data: _.map(_.get('y'), spectra),
       neurons, 
-      maxStep: 10,
+      maxStep: autoSteps,
       maxLearningCoef: 1,
       minLearningCoef: 0.3,
       maxNeighborhood: 1,
