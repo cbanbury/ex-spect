@@ -38,7 +38,7 @@
 									<a class="waves-effect waves-light btn upload-data">Add Data</a>
 								</div>
 							</div>
-							<table class="centered">
+							<table class="responsive-table">
 								<thead>
 									<tr>
 										<th>Select</th>
@@ -53,7 +53,7 @@
 												<input type="checkbox" class="select-spectrum" id="{{_id}}" data-tag="{{label}}" />
 												<label for="{{_id}}"></label>
 											</td>
-											<td>{{file_meta.name}}</td>
+											<td ><p style="text-overflow: ellipsis; overflow: hidden; max-width: 40vw">{{file_meta.name}}</p></td>
 											<td>{{formatDate file_meta.lastModified}}</td>
 										</tr>
 									{{/each}}
