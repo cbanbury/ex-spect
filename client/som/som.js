@@ -9,14 +9,8 @@ Template.som.events({
         
         Template.instance().labels.set(labels);
         Template.instance().gridSize.set(gridSize);
-        console.log('good to go')
-        console.log(Session.get('data-loaded'))
-        console.log(labels)
-          console.log(spectra.length)
 
-        
-       
-        // Template.instance().somData.set(calculateSom(spectra, labels, gridSize));
+        Template.instance().somData.set(calculateSom(spectra, labels, gridSize));
     },
     'change .project-select': function(event) {
       Session.set('data-loaded', false);
