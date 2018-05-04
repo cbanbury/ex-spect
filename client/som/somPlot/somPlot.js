@@ -87,7 +87,6 @@ Template.somPlot.helpers({
 		var simulation = d3.forceSimulation(nodes)
 		  .force("x", d3.forceX(getX))
 		  .force("y", d3.forceY(getY))
-		  // .force('center', d3.forceCenter(width / 2, height / 2))
 		  .force('collision', d3.forceCollide().radius(function(d) {
 		    return 0.5;
 		  }))
