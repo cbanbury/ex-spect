@@ -1,5 +1,5 @@
 <template name="somPlot">
-	<div>
+	<div class="col s12 center-align">
 	  <svg width='100%' height='100%' viewBox='0 0 100 100'>
 	    <defs>
 	      <filter id="glow">
@@ -25,5 +25,15 @@
 	    	{{/each}}
 	    </g>
 	  </svg>
+	</div>
+	<div class="col s12">
+		{{#each classes}}
+				<div class="col s2">
+					<svg width="100%" height="50">
+						<g><circle class="result" cx="10" cy="24" r="10" fill="{{getColor this}}"></circle></g>g>
+					</svg>
+					<p>{{this}}</p>
+				</div>
+	    {{/each}}
 	</div>
 </template>

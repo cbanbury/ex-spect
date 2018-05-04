@@ -8,22 +8,36 @@ import { line } from 'd3-shape';
 import { hexagonHelper } from 'kohonen';
 import _ from 'lodash/fp';
 
-const stepX = 10;
-const scaleGrid = scaleLinear()
-  .domain([0, 1])
-  .range([0, stepX]);
+
+Template.somPlot.onCreated(function() {
+	this.stepX = 7
+
+	this.scaleGrid = scaleLinear()
+  		.domain([0, 1])
+  		.range([0, this.stepX]);
+
+  	var classes = Template.instance().data.labels;
+  	const scaleColor = scaleBand()
+		.domain(classes)
+		.range([1, 0]);
+
+	this.getColor = _.flow(
+		scaleColor,
+		interpolateSpectral,
+	);
+});
 
 Template.somPlot.helpers({
 	generateHexagons: function(neuron) {
 		const hexagonPoints = ([x,y]) => {
 		  // compute the radius of an hexagon
-		  const radius = (stepX / 2) / Math.cos(Math.PI / 6);
+		  const radius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
 		  return range(-Math.PI / 2, 2 * Math.PI, 2 * Math.PI / 6)
 		    .map(a => [x + Math.cos(a) * radius, y + Math.sin(a) * radius]);
 		};
 
 		const pathGenfunction = _.flow(
-	    	_.map(scaleGrid),
+	    	_.map(Template.instance().scaleGrid),
 	     	hexagonPoints,
 	     	line()
 	   	);
@@ -31,48 +45,38 @@ Template.somPlot.helpers({
 		return pathGenfunction(neuron);
 	},
 	neurons: function() {
-		const haxagonsByLine = 7;
+		const haxagonsByLine = Template.instance().data.gridSize;
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
 	classes: function() {
 		return Template.instance().data.labels;
+	},
+	getColor: function(input) {
+		return Template.instance().getColor(input);
 	},
 	placeNeuron: function(index) {
 		var position = index * 100;
 		return 'translate(' + position + ' 0)'
 	},
 	circles: function() {
-		const classes = Template.instance().data.labels;
-		console.log(classes)
-
-		const scaleColor = scaleBand()
-		    .domain(classes)
-		    .range([1, 0]);
-
-		const getColor = _.flow(
-			scaleColor,
-		    interpolateSpectral,
-		);
-
 		const getX = _.flow(
 			  _.get('[0]'),
-			  _.map(scaleGrid),
+			  _.map(Template.instance().scaleGrid),
 			  _.get('[0]')
 			);
 
 		const getY = _.flow(
 		  _.get('[0]'),
-		  _.map(scaleGrid),
+		  _.map(Template.instance().scaleGrid),
 		  _.get('[1]')
 		);
 
 		const getFill = _.flow(
 		  _.get('[1].label'),
-		  getColor,
+		  Template.instance().getColor,
 		);
 
 		var results = Template.instance().data.results;
-		
 		return results.map((item)=>{
 			return {
 				x: getX(item),

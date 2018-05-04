@@ -3,10 +3,12 @@ Template.som.events({
         event.preventDefault();
         var projectId = event.target.projectSelect.value;
         var labels =  $('.chips').material_chip('data').map((item)=>{return item.tag});
-        var spectra = Spectra.find({uid: Meteor.userId(), projectId: projectId}).fetch();
+        var spectra = Spectra.find({uid: Meteor.userId(), projectId: projectId, label: {$in: labels}}).fetch();
+        var gridSize = event.target.gridSize.value;
+        
         Template.instance().labels.set(labels);
-        Template.instance().gridSize.set(event.target.gridSize.value);
-        Template.instance().somData.set(calculateSom(spectra, labels));
+        Template.instance().gridSize.set(gridSize);
+        Template.instance().somData.set(calculateSom(spectra, labels, gridSize));
     },
     'change .project-select': function(event) {
       var labels = Projects.findOne({uid: Meteor.userId(), _id: event.target.value}).labels;
@@ -56,17 +58,17 @@ Template.som.onRendered(function() {
     });
 });
 
-function calculateSom(spectra, labels) {
+function calculateSom(spectra, labels, gridSize) {
     import Kohonen, {hexagonHelper} from 'kohonen';
     import _ from 'lodash/fp';
     import d3 from 'd3';
 
     // setup the self organising map
-    var neurons = hexagonHelper.generateGrid(7, 7);
+    var neurons = hexagonHelper.generateGrid(gridSize, gridSize);
     const k = new Kohonen({
       data: _.map(_.get('y'), spectra),
       neurons, 
-      maxStep: 300,
+      maxStep: 10,
       maxLearningCoef: 1,
       minLearningCoef: 0.3,
       maxNeighborhood: 1,
