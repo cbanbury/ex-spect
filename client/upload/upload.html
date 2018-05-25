@@ -16,7 +16,7 @@
                         <div class="file-field input-field">
                             <div class="btn">
                                 <span>File</span>
-                                <input type="file" class="spectra-upload" multiple>
+                                <input type="file" id="spectraUpload" class="spectra-upload" multiple>
                             </div>
                             <div class="file-path-wrapper">
                                 <input class="file-path validate" type="text" placeholder="Upload one or more files">
@@ -24,7 +24,7 @@
                         </div>
                         <div id="graph"></div>
                         <div class="col s2 offset-s8 m2 offset-m10">
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Save
+                            <button class="btn waves-effect waves-light {{saveDisabled}}" type="submit" name="action">{{saveText}}
                             </button>
                         </div>
                     </form>
