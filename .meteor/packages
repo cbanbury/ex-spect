@@ -49,3 +49,5 @@ dynamic-import@0.3.0
 aldeed:autoform
 materialize:materialize
 momentjs:moment
+mrt:nprogress
+msavin:sjobs

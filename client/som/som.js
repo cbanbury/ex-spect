@@ -1,16 +1,19 @@
 Template.som.events({
-    'submit .compute-som': function(event) {
+    'submit .compute-som': function(event, instance) {
         event.preventDefault();
         var projectId = event.target.projectSelect.value;
         var labels =  $('.chips').material_chip('data').map((item)=>{return item.tag});
 
-        var spectra = Spectra.find({uid: Meteor.userId(), projectId: projectId, label: {$in: labels}}, {y: 1, label: 1}).fetch();
+        // var spectra = Spectra.find({uid: Meteor.userId(), projectId: projectId, label: {$in: labels}}, {y: 1, label: 1}).fetch();
         var gridSize = event.target.gridSize.value;
-        
-        Template.instance().labels.set(labels);
-        Template.instance().gridSize.set(gridSize);
 
-        Template.instance().somData.set(calculateSom(spectra, labels, gridSize));
+        Meteor.call('som:calculate', labels, projectId, gridSize);
+        
+        // Template.instance().labels.set(labels);
+        // Template.instance().gridSize.set(gridSize);
+        // instance.training.set({status:true});
+        // NProgress.start();
+        // calculateSom(spectra, labels, gridSize);
     },
     'change .project-select': function(event) {
       Session.set('data-loaded', false);
@@ -28,6 +31,10 @@ Template.som.helpers({
   },
   somData: function() {
     return Template.instance().somData.get();
+  },
+  models: function() {
+    console.log(SOM.find({uid: Meteor.userId()}).fetch())
+    return SOM.find({uid: Meteor.userId()}, {sort: {created_at: -1}});
   },
   labels: function() {
     return Template.instance().labels.get();
@@ -67,8 +74,8 @@ Template.som.onRendered(function() {
     this.percentTrained = new ReactiveVar();
     
     this.autorun(()=>{
-      this.spectraSubscription = this.subscribe('project:spectra', Template.instance().projectId.get());
-
+      this.spectraSubscription = this.subscribe('project:spectra:meta', Template.instance().projectId.get());
+      this.modelSubscription = this.subscribe('SOM');
       if (this.projectSubscription.ready()) {
         $('select').material_select();
       }
@@ -78,49 +85,3 @@ Template.som.onRendered(function() {
       }
     });
 });
-
-function calculateSom(spectra, labels, gridSize) {
-    import Kohonen, {hexagonHelper} from 'kohonen';
-    import _ from 'lodash/fp';
-    import d3 from 'd3';
-
-    var autoSteps = spectra.length * 10;
-
-    var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
-    console.log('Suggested grid size for data: ' + suggestedGridSize);
-
-    console.log('Number of steps to run: ' + autoSteps);
-
-    // setup the self organising map
-    var neurons = hexagonHelper.generateGrid(gridSize, gridSize);
-    const k = new Kohonen({
-      data: _.map(_.get('y'), spectra),
-      neurons, 
-      maxStep: autoSteps,
-      maxLearningCoef: 1,
-      minLearningCoef: 0.3,
-      maxNeighborhood: 1,
-      minNeighborhood: 0.3,
-      randomStart: true,
-      classPlanes: labels
-    });
-
-    console.log('Starting training')
-    var start = new Date().getTime();
-    k.training(function() {
-        console.log('step complete')
-    });
-    var end = new Date().getTime();
-
-    console.log('past training in: ' + (end-start)/1000);
-    
-    var positions = k.mapping();
-
-    return _.unzip([
-      positions,
-      _.map(
-        _.pick(['label', 'file_meta']),
-        spectra,
-        ),
-      ]);
-};

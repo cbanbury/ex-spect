@@ -30,9 +30,37 @@
                 </form>
             </div>
             <div class="col s8">
-                {{#if somData}}
+                    <table>
+                      <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Grid Size</th>
+                            <th>Learning Steps</th>
+                            <th>Build Progress</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#each models}}
+                        <tr>
+                          <td>{{projectId}}</td>
+                          <td>{{neurons}}</td>
+                          <td>{{autoSteps}}</td>
+                          <td>
+                            {{#if complete}}
+                              Complete
+                            {{else}}
+                              {{progress}}
+                            {{/if}}
+                          </td>
+                        </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+<!--                 {{#if foo.complete}}
                     {{>somPlot results=somData labels=labels gridSize=gridSize}}
-                {{/if}}
+                {{else}}
+                  {{foo.progress}}
+                {{/if}} -->
             </div>
         </div>
     </div>
