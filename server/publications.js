@@ -21,3 +21,7 @@ Meteor.publish("user:spectra", function() {
 Meteor.publish("SOM", function() {
     return SOM.find({uid: this.userId});
 });
+
+Meteor.publish("SOM:model", function(modelId) {
+    return SOM.find({uid: this.userId, _id: modelId});
+});

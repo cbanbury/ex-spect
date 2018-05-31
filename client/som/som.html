@@ -37,6 +37,7 @@
                             <th>Grid Size</th>
                             <th>Learning Steps</th>
                             <th>Build Progress</th>
+                            <th></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -52,15 +53,15 @@
                               {{progress}}
                             {{/if}}
                           </td>
+                          <td>
+                            {{#if complete}}
+                              <button class="waves-effect waves-light btn view-model" id={{_id}}>view</button>
+                            {{/if}}
+                          </td>
                         </tr>
                         {{/each}}
                       </tbody>
                     </table>
-<!--                 {{#if foo.complete}}
-                    {{>somPlot results=somData labels=labels gridSize=gridSize}}
-                {{else}}
-                  {{foo.progress}}
-                {{/if}} -->
             </div>
         </div>
     </div>

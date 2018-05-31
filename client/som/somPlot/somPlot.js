@@ -10,31 +10,50 @@ import _ from 'lodash/fp';
 
 
 Template.somPlot.onCreated(function() {
-	this.stepX = 7
+	this.model = new ReactiveVar();
+	var that = this;
 
-	this.scaleGrid = scaleLinear()
-  		.domain([0, 1])
-  		.range([0, this.stepX]);
+	this.autorun(()=>{
+		this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getParam('id'));
+		if (this.modelSubscription.ready()) {
+			that.model.set(SOM.findOne({_id: FlowRouter.getParam('id')}));
 
-  	var classes = Template.instance().data.labels;
-  	const scaleColor = scaleBand()
-		.domain(classes)
-		.range([1, 0]);
+			that.stepX = 9
 
-	this.scaleSize = scaleBand()
-      .domain(classes)
-      .range([10, 10]);
+			that.scaleGrid = scaleLinear()
+			  	.domain([0, 1])
+			  	.range([0, that.stepX]);
 
-	this.getColor = _.flow(
-		scaleColor,
-		interpolateSpectral,
-	);
-});
+			var classes = that.model.get().labels;
+			 const scaleColor = scaleBand()
+				.domain(classes)
+				.range([1, 0]);
 
-Template.somPlot.onRendered(function() {
+			that.scaleSize = scaleBand()
+			    .domain(classes)
+			    .range([10, 10]);
+
+			that.getColor = _.flow(
+				scaleColor,
+				interpolateSpectral,
+			);
+		}
+	});
 });
 
 Template.somPlot.helpers({
+	crumbs: function() {
+		return [
+			{
+				path: "/learn",
+				title: 'Machine Learning'
+			},
+			{
+				path: '',
+				title: 'Self Organising Map (SOM)'
+			}
+		]
+	},
 	generateHexagons: function(neuron) {
 		const hexagonPoints = ([x,y]) => {
 		  // compute the radius of an hexagon
@@ -52,11 +71,14 @@ Template.somPlot.helpers({
 		return pathGenfunction(neuron);
 	},
 	neurons: function() {
-		const haxagonsByLine = Template.instance().data.gridSize;
+		const haxagonsByLine = Template.instance().model.get().neurons;
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
+	viewBoxSize: function() {
+		return (Template.instance().model.get().neurons + 1) * 10;
+	},
 	classes: function() {
-		return Template.instance().data.labels;
+		return Template.instance().model.get().labels;
 	},
 	getColor: function(input) {
 		return Template.instance().getColor(input);
@@ -66,8 +88,6 @@ Template.somPlot.helpers({
 		return 'translate(' + position + ' 0)'
 	},
 	simulate: function() {
-		var width = 400, height = 400
-
 		console.log('simulating')
 
 		const getX = _.flow(
@@ -82,7 +102,7 @@ Template.somPlot.helpers({
 		        _.get('[1]')
 		      );
 
-		var nodes =  Template.instance().data.results;
+		var nodes =  Template.instance().model.get().positions;
 
 		var simulation = d3.forceSimulation(nodes)
 		  .force("x", d3.forceX(getX))
@@ -93,7 +113,7 @@ Template.somPlot.helpers({
 		  .on('tick', ticked);
 
 		function ticked() {
-		  var u = d3.select('svg')
+		  var u = d3.select('.som-grid')
 		    .selectAll('circle')
 		    .data(nodes)
 
@@ -133,7 +153,7 @@ Template.somPlot.helpers({
 		  Template.instance().scaleSize,
 		);
 
-		var results = Template.instance().data.results;		
+		var results = Template.instance().model.get().positions;		
 
 		return results.map((item)=>{
 			return {
