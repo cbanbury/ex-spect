@@ -42,7 +42,7 @@ Template.somPlot.onCreated(function() {
 });
 
 Template.somPlot.onRendered(function() {
-	$('ul.tabs').tabs();
+	$('ul.som-tabs').tabs();
 	$('.tooltipped').tooltip({delay: 50});
 });
 
