@@ -1,9 +1,11 @@
 Meteor.methods({
     'SOM:seed': function(labels, projectId, neurons, autoSteps) {
+        var project = Projects.findOne({_id: projectId});
         return SOM.insert({
             uid: Meteor.userId(),
             labels: labels,
             projectId: projectId,
+            projectName: project.name,
             neurons: neurons,
             complete: false,
             created_at: new Date(),

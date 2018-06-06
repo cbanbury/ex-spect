@@ -28,14 +28,7 @@ Template.som.helpers({
     return Session.get('dummy');
   },
   models: function() {
-    var models = SOM.find({uid: Meteor.userId()}, {sort: {created_at: -1}}).fetch();
-    pids = models.map((item)=>{return item.projectId});
-    var projects = Projects.find({uid: Meteor.userId(), _id: {$in: pids}}).fetch();
-    
-    return models.map((item)=>{
-      item.projectName = projects.filter((project)=>{return project._id === item.projectId})[0].name;
-      return item;
-    });
+    return SOM.find({uid: Meteor.userId()}, {sort: {created_at: -1}});
   },
   gridSizes: function() {
     return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
