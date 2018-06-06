@@ -44,7 +44,7 @@ Template.viewer.onRendered(function(){
 			});
 
 			var layout = {
-			    // autosize: true,
+			    autosize: true,
 			    // width: 350,
 			    // height: 250,
 			    xaxis: {
