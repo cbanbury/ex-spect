@@ -20,9 +20,7 @@
     "lodash": "^4.17.5",
     "lodash-fp": "^0.10.4",
     "meteor-node-stubs": "^0.2.3",
-    "ml-pca": "^1.1.2",
-    "tiny-worker": "^2.1.2",
-    "webworker-threads": "^0.7.13"
+    "ml-pca": "^1.1.2"
   },
   "devDependencies": {},
   "scripts": {
