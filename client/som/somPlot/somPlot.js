@@ -41,6 +41,11 @@ Template.somPlot.onCreated(function() {
 	});
 });
 
+Template.somPlot.onRendered(function() {
+	$('ul.tabs').tabs();
+	$('.tooltipped').tooltip({delay: 50});
+});
+
 Template.somPlot.helpers({
 	crumbs: function() {
 		return [
@@ -70,6 +75,13 @@ Template.somPlot.helpers({
 
 		return pathGenfunction(neuron);
 	},
+	modelData: function() {
+		var model = Template.instance().model.get();
+		if (model) {
+			model.trainingTime = (model.completed_at - model.created_at) / 1000;
+		}
+		return model;
+	},
 	neurons: function() {
 		const haxagonsByLine = Template.instance().model.get().neurons;
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
@@ -88,8 +100,6 @@ Template.somPlot.helpers({
 		return 'translate(' + position + ' 0)'
 	},
 	simulate: function() {
-		console.log('simulating')
-
 		const getX = _.flow(
 		        _.get('[0]'),
 		        _.map(Template.instance().scaleGrid),
