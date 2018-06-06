@@ -60,6 +60,10 @@ Template.upload.events({
             }
 
             if (i < numFiles) new Promise((resolve, reject) => {
+                if (files[i].type !== 'text/plain') {
+                    return resolve();
+                }
+
                 getFileData(files[i]).then(function(data) {
                     var doc = {
                         label: FlowRouter.getQueryParam('label'),
