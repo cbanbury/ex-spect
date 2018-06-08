@@ -4,7 +4,7 @@
   "description": "A suite of tools for storing data from Raman spectra and analysing spectra.",
   "main": "index.js",
   "dependencies": {
-    "@babel/runtime": "^7.0.0-beta.44",
+    "@babel/runtime": "^7.0.0-beta.49",
     "babel-runtime": "^6.18.0",
     "bcrypt": "^0.8.7",
     "d3": "^4.13.0",
@@ -19,7 +19,7 @@
     "kohonen": "git+https://github.com/cbanbury/kohonen.git#random-init",
     "lodash": "^4.17.5",
     "lodash-fp": "^0.10.4",
-    "meteor-node-stubs": "^0.2.3",
+    "meteor-node-stubs": "^0.4.1",
     "ml-pca": "^1.1.2"
   },
   "devDependencies": {},

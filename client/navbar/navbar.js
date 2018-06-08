@@ -12,8 +12,6 @@ Template.navbar.rendered = function() {
     	onShow: function(param) {
     		if (param.selector === '#projects') {
     			FlowRouter.go('projects');
-    		} else if (param.selector === '#learn') {
-                FlowRouter.go('learn');
             } else {
     			FlowRouter.go('home');
     		}

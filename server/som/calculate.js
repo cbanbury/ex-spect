@@ -20,6 +20,7 @@ Meteor.methods({
         }
         doc = {
             positions: positions,
+            progress: 100,
             complete: true,
             completed_at: new Date(),
             uid: Meteor.userId()
