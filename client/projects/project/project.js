@@ -25,7 +25,7 @@ Template.project.helpers({
 
 Template.project.events({
 	'click .upload-data':function(event) {
-		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag});
+		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag, lid: this.id});
 	},
 	'click .select-spectrum': function(event) {
 		if (event.target.checked) {

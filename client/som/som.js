@@ -2,7 +2,7 @@ Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
         instance.modelSettings.set({
-          labels: $('.chips').material_chip('data').map((item)=>{return item.tag}),
+          labels: $('.chips').material_chip('data'),
           gridSize: event.target.gridSize.value
         });
     },
@@ -64,8 +64,9 @@ Template.som.onRendered(function() {
         var projectId = Template.instance().projectId.get();
 
         var start = new Date().getTime();
+
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: labels}}, {y: 1, label: 1}).fetch();
+            projectId: projectId, label: {$in: labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
         
         var autoSteps = spectra.length * 10;
 
@@ -79,36 +80,23 @@ Template.som.onRendered(function() {
 
           const k = new Kohonen({
             data: _.map(_.get('y'), spectra),
+            labels: _.map(_.get('labelId'), spectra),
             neurons, 
             maxStep: autoSteps,
             maxLearningCoef: 1,
             minLearningCoef: 0.3,
             maxNeighborhood: 1,
-            minNeighborhood: 0.3,
-            randomStart: true,
-            classPlanes: labels
+            minNeighborhood: 0.3
           });
 
           console.log('Starting training')
-          var counter = 0;
-          k.training(function(neuron) {
-            counter++;
-            if (counter % updateInterval === 0) {
-              console.log((counter / updateInterval) * 10);
-            }
-
-          });
+          // var counter = 0;
+          k.learn();
           
           var positions = k.mapping();
 
-          positions = _.unzip([
-            positions,
-            _.map(
-              _.pick(['label', 'file_meta']),
-              spectra,
-              ),
-          ]);
           console.log('Completed training');
+
           Meteor.call('SOM:save', objectId, positions, function(err) {
             $('#runButton').text('run');
             $('#runButton').attr('disabled', null)

@@ -18,13 +18,14 @@ Template.somPlot.onCreated(function() {
 		if (this.modelSubscription.ready()) {
 			that.model.set(SOM.findOne({_id: FlowRouter.getParam('id')}));
 
+			console.log(that.model.get().positions)
 			that.stepX = 9
 
 			that.scaleGrid = scaleLinear()
 			  	.domain([0, 1])
 			  	.range([0, that.stepX]);
 
-			var classes = that.model.get().labels;
+			var classes = that.model.get().labels.map((item)=>{return item.id});
 			 const scaleColor = scaleBand()
 				.domain(classes)
 				.range([1, 0]);
@@ -154,7 +155,7 @@ Template.somPlot.helpers({
 		);
 
 		const getFill = _.flow(
-		  _.get('[1].label'),
+		  _.get('[1].class'),
 		  Template.instance().getColor,
 		);
 
@@ -163,7 +164,7 @@ Template.somPlot.helpers({
 		  Template.instance().scaleSize,
 		);
 
-		var results = Template.instance().model.get().positions;		
+		var results = Template.instance().model.get().positions;
 
 		return results.map((item)=>{
 			return {
