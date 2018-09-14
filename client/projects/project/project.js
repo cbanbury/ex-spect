@@ -36,6 +36,9 @@ Template.project.events({
 	},
 	'click .view-data': function(event) {
 		FlowRouter.go('plot', {id: FlowRouter.getParam("id")});
+	},
+	'click .project-settings': function(event) {
+		FlowRouter.go('projectSettings', {id: FlowRouter.getParam("id")});
 	}
 });
 

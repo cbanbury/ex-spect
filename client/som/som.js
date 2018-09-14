@@ -2,7 +2,7 @@ Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
         instance.modelSettings.set({
-          labels: $('.chips').material_chip('data'),
+          labels: $('.chips').material_chip('data').map((item)=>{return item.tag}),
           gridSize: event.target.gridSize.value
         });
     },
@@ -66,7 +66,7 @@ Template.som.onRendered(function() {
         var start = new Date().getTime();
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
+            projectId: projectId, label: {$in: labels}}, {y: 1, label: 1, labelId: 1}).fetch();
         
         var autoSteps = spectra.length * 10;
 
@@ -75,12 +75,20 @@ Template.som.onRendered(function() {
         var updateInterval = Math.round(autoSteps / 10);
 
         Meteor.call('SOM:seed', labels, projectId, +gridSize, autoSteps, function(err, objectId) {
+          var labelEnum = [];
+          labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
+          
+          var spectraLabels = spectra.map((spectrum)=>{
+            var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
+            return match[0].id;  
+          });
+
           // setup the self organising map
           var neurons = hexagonHelper.generateGrid(gridSize, gridSize);
 
           const k = new Kohonen({
             data: _.map(_.get('y'), spectra),
-            labels: _.map(_.get('labelId'), spectra),
+            labels: spectraLabels,
             neurons, 
             maxStep: autoSteps,
             maxLearningCoef: 1,
@@ -97,7 +105,7 @@ Template.som.onRendered(function() {
 
           console.log('Completed training');
 
-          Meteor.call('SOM:save', objectId, positions, function(err) {
+          Meteor.call('SOM:save', objectId, positions, labelEnum, function(err) {
             $('#runButton').text('run');
             $('#runButton').attr('disabled', null)
           });

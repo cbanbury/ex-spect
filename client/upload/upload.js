@@ -67,7 +67,6 @@ Template.upload.events({
                 getFileData(files[i]).then(function(data) {
                     var doc = {
                         label: FlowRouter.getQueryParam('label'),
-                        labelId: +FlowRouter.getQueryParam('lid'),
                         uid: Meteor.userId(),
                         projectId: FlowRouter.getParam("id"),
                         created_at: new Date(),
