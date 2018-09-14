@@ -3,23 +3,27 @@ import { forceCollide, forceSimulation, forceX, forceY } from 'd3-force';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { interpolateSpectral } from 'd3-scale-chromatic';
 import * as d3 from 'd3';
-import 'd3-selection-multi';
 import { line } from 'd3-shape';
-import { hexagonHelper } from 'kohonen';
+import Kohonen, { hexagonHelper } from 'kohonen';
 import _ from 'lodash/fp';
 
 
 Template.somPlot.onCreated(function() {
 	this.model = new ReactiveVar();
+	this.positions = new ReactiveVar();
 	var that = this;
 
 	this.autorun(()=>{
 		this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
 		this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getParam('modelId'));
 		if (this.modelSubscription.ready()) {
-			that.model.set(SOM.findOne({_id: FlowRouter.getParam('modelId')}));
+			var somModel = SOM.findOne({_id: FlowRouter.getParam('modelId')});
+			that.model.set(somModel);
 
-			console.log(that.model.get().positions)
+			var k = new Kohonen();
+			k.import(somModel.model);
+			that.positions.set(k.mapping());
+
 			that.stepX = 9
 
 			that.scaleGrid = scaleLinear()
@@ -123,7 +127,7 @@ Template.somPlot.helpers({
 		        _.get('[1]')
 		      );
 
-		var nodes =  Template.instance().model.get().positions;
+		var nodes = Template.instance().positions.get();
 
 		var simulation = d3.forceSimulation(nodes)
 		  .force("x", d3.forceX(getX))
@@ -144,8 +148,8 @@ Template.somPlot.helpers({
 		      return 0.5
 		    })
 		    .merge(u)
-		    .attrs({cx: _.get('x'), cy: _.get('y')});
-
+		    .attr('cx', _.get('x'))
+		    .attr('cy', _.get('y'))
 
 		  u.exit().remove()
 		}
@@ -174,8 +178,7 @@ Template.somPlot.helpers({
 		  Template.instance().scaleSize,
 		);
 
-		var results = Template.instance().model.get().positions;
-
+		var results = Template.instance().positions.get();
 		return results.map((item)=>{
 			return {
 				x: getX(item),

@@ -105,18 +105,9 @@ Template.som.onRendered(function() {
             minNeighborhood: 0.3
           });
 
-          console.log('Starting training')
-          // var counter = 0;
-          k.learn((step)=>{
-            console.log('got here')
-            Materialize.toast('woop woop')
-          });
-          
-          var positions = k.mapping();
-
           console.log('Completed training');
 
-          Meteor.call('SOM:save', objectId, positions, labelEnum, function(err) {
+          Meteor.call('SOM:save', objectId, k.export(), labelEnum, function(err) {
             $('#runButton').text('run');
             $('#runButton').attr('disabled', null)
           });

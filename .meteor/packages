@@ -51,4 +51,4 @@ materialize:materialize
 momentjs:moment
 mrt:nprogress
 msavin:sjobs
-underscore
+underscore@1.0.10

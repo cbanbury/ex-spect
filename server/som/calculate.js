@@ -4,7 +4,6 @@ Meteor.methods({
 
         return SOM.insert({
             uid: Meteor.userId(),
-            labels: labels,
             projectId: projectId,
             projectName: project.name,
             neurons: neurons,
@@ -14,17 +13,17 @@ Meteor.methods({
             autoSteps, autoSteps
         });
     },
-    'SOM:save': function(objectId, positions, labelEnum) {
+    'SOM:save': function(objectId, model, labelEnum) {
         if (SOM.find({uid: Meteor.userId()}).count() >= 5) {
             var last = SOM.findOne({uid: Meteor.userId(), _id: {$ne: objectId}}, {sort: {created_at: -1}, limit: 1});
             SOM.remove({_id: last._id});
         }
         doc = {
-            positions: positions,
             complete: true,
             completed_at: new Date(),
             uid: Meteor.userId(),
-            labels: labelEnum
+            labels: labelEnum,
+            model: model
         }
 
         SOM.update({_id: objectId}, {$set: doc});
