@@ -1,17 +1,9 @@
 <template name="som">
     <div class="container">
+      {{>breadcrumbs crumbs=crumbs}}
         <div class="row">
             <div class="col s4">
                 <form class="compute-som">
-                    <div class="input-field col s12">
-                      <select class="project-select" id="projectSelect">
-                        <option value="" disabled selected>Select Project</option>
-                        {{#each projects}}
-                            <option value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                      </select>
-                      <label>Select Project</label>
-                    </div>
                     <div class="input-field col s12">
                         <select class="grid-size-select" id="gridSize">
                           {{#each gridSizes}}
@@ -34,7 +26,6 @@
                     <table>
                       <thead>
                         <tr>
-                            <th>Project</th>
                             <th>Grid Size</th>
                             <th>Learning Steps</th>
                             <th>Build Progress (%)</th>
@@ -44,7 +35,6 @@
                       <tbody>
                         {{#each models}}
                         <tr>
-                          <td>{{projectName}}</td>
                           <td>{{neurons}}</td>
                           <td>{{autoSteps}}</td>
                           <td>

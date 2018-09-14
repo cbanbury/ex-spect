@@ -39,6 +39,9 @@ Template.project.events({
 	},
 	'click .project-settings': function(event) {
 		FlowRouter.go('projectSettings', {id: FlowRouter.getParam("id")});
+	},
+	'click .machine-learning': function(event) {
+		FlowRouter.go('learn', {id: FlowRouter.getParam("id")});
 	}
 });
 

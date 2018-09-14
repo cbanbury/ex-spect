@@ -14,9 +14,10 @@ Template.somPlot.onCreated(function() {
 	var that = this;
 
 	this.autorun(()=>{
-		this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getParam('id'));
+		this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
+		this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getParam('modelId'));
 		if (this.modelSubscription.ready()) {
-			that.model.set(SOM.findOne({_id: FlowRouter.getParam('id')}));
+			that.model.set(SOM.findOne({_id: FlowRouter.getParam('modelId')}));
 
 			console.log(that.model.get().positions)
 			that.stepX = 9
@@ -49,9 +50,18 @@ Template.somPlot.onRendered(function() {
 
 Template.somPlot.helpers({
 	crumbs: function() {
+		var project = Projects.findOne({_id: FlowRouter.getParam("id")})
 		return [
 			{
-				path: "/learn",
+			  path: '/projects',
+			  title: 'Projects'
+			},
+			{
+			  path: '/projects/' + project._id,
+			  title: project.name
+			},
+			{
+				path: '/projects/' + project._id + '/learn',
 				title: 'Machine Learning'
 			},
 			{

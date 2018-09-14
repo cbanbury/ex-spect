@@ -6,29 +6,35 @@ Template.som.events({
           gridSize: event.target.gridSize.value
         });
     },
-    'change .project-select': function(event) {
-      Session.set('data-loaded', false);
-      Template.instance().projectId.set(event.target.value);
-      var labels = Projects.findOne({uid: Meteor.userId(), _id: event.target.value}).labels;
-       $('.chips').material_chip({
-        data: labels
-      });  
-    },
     'click .view-model': function(event) {
       event.preventDefault();
-      FlowRouter.go('model', {id: this._id});
+      FlowRouter.go('model', {id: FlowRouter.getParam("id"), modelId: this._id});
     }
 });
 
 Template.som.helpers({
-  projects: function() {
-    return Projects.find({uid: Meteor.userId()});
+  'crumbs': function() {
+    var project = Template.instance().projectData.get();
+    return [
+      {
+        path: '/projects',
+        title: 'Projects'
+      },
+      {
+        path: '/projects/' + project._id,
+        title: project.name
+      },
+      {
+        path: '',
+        title: 'Machine Learning'
+      }
+    ]
   },
   dummy: function() {
     return Session.get('dummy');
   },
   models: function() {
-    return SOM.find({uid: Meteor.userId()}, {sort: {created_at: -1}});
+    return SOM.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id")}, {sort: {created_at: -1}});
   },
   gridSizes: function() {
     return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
@@ -49,10 +55,12 @@ Template.som.helpers({
 
 Template.som.onCreated(function() {
   this.modelSettings = new ReactiveVar();
-  this.projectId = new ReactiveVar();
   this.autorun(()=>{
-    this.projectSubscription = this.subscribe('projects');
+   this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
+   this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
   });
+
+  this.projectData = new ReactiveVar({name: ''});
 });
 
 Template.som.onRendered(function() {
@@ -61,7 +69,7 @@ Template.som.onRendered(function() {
         $('#runButton').attr('disabled', 'disabled')
         import Kohonen, {hexagonHelper} from 'kohonen';
         import _ from 'lodash/fp';
-        var projectId = Template.instance().projectId.get();
+        var projectId = FlowRouter.getParam("id");
 
         var start = new Date().getTime();
 
@@ -99,7 +107,10 @@ Template.som.onRendered(function() {
 
           console.log('Starting training')
           // var counter = 0;
-          k.learn();
+          k.learn((step)=>{
+            console.log('got here')
+            Materialize.toast('woop woop')
+          });
           
           var positions = k.mapping();
 
@@ -111,17 +122,19 @@ Template.som.onRendered(function() {
           });
         });
     }
-
+    $('select').material_select();
     this.autorun(()=>{
       modelSettings = Template.instance().modelSettings.get();
       if (modelSettings && modelSettings.labels) {
         calculateSOM(modelSettings.labels, modelSettings.gridSize)
       }
 
-      this.spectraSubscription = this.subscribe('project:spectra:meta', Template.instance().projectId.get());
       this.modelSubscription = this.subscribe('SOM');
       if (this.projectSubscription.ready()) {
-        $('select').material_select();
+        Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
+        $('.chips').material_chip({
+          data: Template.instance().projectData.get().labels
+        });
       }
 
       if (this.spectraSubscription.ready()) {
