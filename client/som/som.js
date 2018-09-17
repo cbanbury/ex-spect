@@ -26,6 +26,9 @@ Template.som.helpers({
       }
     ]
   },
+  labels: function() {
+    return $('.chips').material_chip('data');
+  },
   somBuilt: function () {
     return Template.instance().somBuilt.get();
   },
@@ -43,6 +46,12 @@ Template.som.helpers({
     }
 
     return 'Loading'
+  },
+  k: function() {
+    return Template.instance().k.get();
+  },
+  positions: function() {
+    return Template.instance().positions.get();
   }
 })
 
@@ -54,10 +63,13 @@ Template.som.onCreated(function() {
 
   this.projectData = new ReactiveVar({name: ''});
   this.somBuilt = new ReactiveVar(false);
+  this.k = new ReactiveVar();
+  this.positions = new ReactiveVar();
 });
 
 Template.som.onRendered(function() {
     this.calculateSOM = function (labels, gridSize) {
+        Template.instance().somBuilt.set(false);
         $('#runButton').text('building...');
         $('#runButton').attr('disabled', 'disabled')
         import Kohonen, {hexagonHelper} from 'kohonen';
@@ -98,6 +110,7 @@ Template.som.onRendered(function() {
         });
 
         var instance = Template.instance();
+        instance.k.set(k);
 
         for (var i=0; i<autoSteps; i++) {
           window.setTimeout(function(){
@@ -108,10 +121,10 @@ Template.som.onRendered(function() {
               $('#runButton').text('run');
               $('#runButton').attr('disabled', null)
               instance.somBuilt.set(true);
+              instance.positions.set(k.mapping());
             }
           }, 0);
         }
-
     }
 
     $('select').material_select();
