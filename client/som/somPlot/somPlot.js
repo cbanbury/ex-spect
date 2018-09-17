@@ -9,7 +9,6 @@ import _ from 'lodash/fp';
 
 
 Template.somPlot.onCreated(function() {
-	console.log(this.data)
 	this.model = new ReactiveVar();
 	
 	// setup functions for animation
@@ -30,7 +29,7 @@ Template.somPlot.onCreated(function() {
 
 	this.getColor = _.flow(
 		scaleColor,
-		interpolateSpectral,
+		d3.scaleOrdinal(d3.schemeCategory10),
 	);
 
 	this.getX = _.flow(
