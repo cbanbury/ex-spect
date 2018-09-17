@@ -20,7 +20,8 @@
     "lodash": "^4.17.11",
     "lodash-fp": "^0.10.4",
     "meteor-node-stubs": "^0.2.3",
-    "ml-pca": "^1.1.2"
+    "ml-pca": "^1.1.2",
+    "workerpool": "^2.3.3"
   },
   "devDependencies": {},
   "scripts": {

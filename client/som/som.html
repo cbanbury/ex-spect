@@ -17,42 +17,14 @@
                         <label>Include Data</label>
                     </div>
                     <div class="col s4">
-                      {{dummy}}
                         <button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">{{runText}}</button>
                     </div>
                 </form>
             </div>
             <div class="col s8">
-                    <table>
-                      <thead>
-                        <tr>
-                            <th>Grid Size</th>
-                            <th>Learning Steps</th>
-                            <th>Build Progress (%)</th>
-                            <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {{#each models}}
-                        <tr>
-                          <td>{{neurons}}</td>
-                          <td>{{autoSteps}}</td>
-                          <td>
-                            {{#if complete}}
-                              Complete
-                            {{else}}
-                              <p class="pulse">{{progress}}</p>
-                            {{/if}}
-                          </td>
-                          <td>
-                            {{#if complete}}
-                              <button class="waves-effect waves-light btn view-model" id={{_id}}>view</button>
-                            {{/if}}
-                          </td>
-                        </tr>
-                        {{/each}}
-                      </tbody>
-                    </table>
+              {{#if somBuilt}}
+                all done jim
+              {{/if}}
             </div>
         </div>
     </div>

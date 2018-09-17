@@ -14,6 +14,8 @@ Meteor.methods({
         });
     },
     'SOM:save': function(objectId, model, labelEnum) {
+        console.log(model)
+        delete model._data;
         if (SOM.find({uid: Meteor.userId()}).count() >= 5) {
             var last = SOM.findOne({uid: Meteor.userId(), _id: {$ne: objectId}}, {sort: {created_at: -1}, limit: 1});
             SOM.remove({_id: last._id});

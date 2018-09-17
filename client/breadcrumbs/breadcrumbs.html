@@ -1,11 +1,13 @@
 <template name="breadcrumbs">
-	<nav style="height:20px !important; line-height: 20px !important; padding-bottom: 20px !important;">
-		<div class="nav-wrapper">
-			<div class="col s12">
-				{{#each crumbs}}
-					<a href="{{path}}" class="breadcrumb">{{title}}</a>
-				{{/each}}
+	{{#if Template.subscriptionsReady}}
+		<nav style="height:20px !important; line-height: 20px !important; padding-bottom: 20px !important;">
+			<div class="nav-wrapper">
+				<div class="col s12">
+					{{#each crumbs}}
+						<a href="{{path}}" class="breadcrumb">{{title}}</a>
+					{{/each}}
+				</div>
 			</div>
-		</div>
-	</nav>
+		</nav>
+	{{/if}}
 </template>

@@ -11,37 +11,65 @@ import _ from 'lodash/fp';
 Template.somPlot.onCreated(function() {
 	this.model = new ReactiveVar();
 	this.positions = new ReactiveVar();
-	var that = this;
+	var self = this;
 
 	this.autorun(()=>{
 		this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
 		this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getParam('modelId'));
-		if (this.modelSubscription.ready()) {
+		this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+		if (this.modelSubscription.ready() && this.spectraSubscription.ready()) {
 			var somModel = SOM.findOne({_id: FlowRouter.getParam('modelId')});
-			that.model.set(somModel);
+			var spectra = Spectra.find({projectId: FlowRouter.getParam("id")}, {y: 1, label: 1})
+			somModel.model._data = {v: [], labels: [], somdi: []};
+			spectra.map((spectrum)=>{
+				somModel._data.v.push(spectrum.y);
 
+				var match = somModel.model.labels.filter((item)=>{return item.tag === spectrum.label});
+				somModel._data.labels.push(match[0].id);
+
+				var somdi = new Array(somModel.model.labels.length).fill(0);
+				somdi[match[0].id] = 1;
+				somModel._data.somdi.push(somdi);
+			});
+
+			self.model.set(somModel);
+
+			// deserialize the Kohonen model
 			var k = new Kohonen();
 			k.import(somModel.model);
-			that.positions.set(k.mapping());
+			self.positions.set(k.mapping());
 
-			that.stepX = 9
+			// setup functions for animation
+			self.stepX = 9
 
-			that.scaleGrid = scaleLinear()
+			self.scaleGrid = scaleLinear()
 			  	.domain([0, 1])
-			  	.range([0, that.stepX]);
+			  	.range([0, self.stepX]);
 
-			var classes = that.model.get().labels.map((item)=>{return item.id});
+			var classes = self.model.get().labels.map((item)=>{return item.id});
 			 const scaleColor = scaleBand()
 				.domain(classes)
 				.range([1, 0]);
 
-			that.scaleSize = scaleBand()
+			self.scaleSize = scaleBand()
 			    .domain(classes)
 			    .range([10, 10]);
 
-			that.getColor = _.flow(
+			self.getColor = _.flow(
 				scaleColor,
 				interpolateSpectral,
+			);
+
+			self.getX = _.flow(
+			    _.get('[0]'),
+			    _.map(Template.instance().scaleGrid),
+			    _.get('[0]')
+			);
+
+			self.getY = _.flow(
+			    _.get('[0]'),
+			    _.map(Template.instance().scaleGrid),
+			    _.get('[1]')
 			);
 		}
 	});
@@ -115,23 +143,12 @@ Template.somPlot.helpers({
 		return 'translate(' + position + ' 0)'
 	},
 	simulate: function() {
-		const getX = _.flow(
-		        _.get('[0]'),
-		        _.map(Template.instance().scaleGrid),
-		        _.get('[0]')
-		      );
-
-		      const getY = _.flow(
-		        _.get('[0]'),
-		        _.map(Template.instance().scaleGrid),
-		        _.get('[1]')
-		      );
-
+		// do force simulation to prevent circles from overlapping in neurons
 		var nodes = Template.instance().positions.get();
 
 		var simulation = d3.forceSimulation(nodes)
-		  .force("x", d3.forceX(getX))
-		  .force("y", d3.forceY(getY))
+		  .force("x", d3.forceX(Template.instance().getX))
+		  .force("y", d3.forceY(Template.instance().getY))
 		  .force('collision', d3.forceCollide().radius(function(d) {
 		    return 0.5;
 		  }))
@@ -156,18 +173,7 @@ Template.somPlot.helpers({
 		  
 	},
 	circles: function() {
-		const getX = _.flow(
-			  _.get('[0]'),
-			  _.map(Template.instance().scaleGrid),
-			  _.get('[0]')
-			);
-
-		const getY = _.flow(
-		  _.get('[0]'),
-		  _.map(Template.instance().scaleGrid),
-		  _.get('[1]')
-		);
-
+		// paint a circle for each spectrum into the map
 		const getFill = _.flow(
 		  _.get('[1].class'),
 		  Template.instance().getColor,
@@ -181,8 +187,8 @@ Template.somPlot.helpers({
 		var results = Template.instance().positions.get();
 		return results.map((item)=>{
 			return {
-				x: getX(item),
-				y: getY(item),
+				x: Template.instance().getX(item),
+				y: Template.instance().getY(item),
 				color: getFill(item)
 			}
 		});

@@ -1,7 +1,4 @@
 <template name="somPlot">
-	
-	<div class="container">
-		{{>breadcrumbs crumbs=crumbs}}
 		<div class="row">
 					    <div class="col s12">
 					      <ul class="tabs som-tabs">
@@ -13,48 +10,6 @@
 					    <div id="somMap" class="col s12">
 					    	<div class="row">
 					    		<div class="col s4">
-					    			<ul class="collection">
-					    			  <li class="collection-item">
-					    			  	<strong>Map Parameters</strong><br>
-					    			  	
-					    			  	<label for="projectName">Project</label>
-					    			  	<p id="projectName">{{modelData.projectName}}</p>
-
-					    			  	<label for="projectName">Learning Steps</label>
-					    			  	<p id="projectName">{{modelData.autoSteps}}</p>
-
-					    			  	<label for="projectName">Training Time (s)</label>
-					    			  	<p id="projectName">{{modelData.trainingTime}}</p>
-					    			  </li>
-					    			  <li class="collection-item">
-					    			  	<form action="#">
-					    			  		<strong>Colour Mode</strong>
-					    			  	  <p>
-					    			  	    <input name="group1" type="radio" id="all" checked />
-					    			  	    <label for="all">All Data
-												<a href="" class="tooltipped" data-position="right" data-tooltip="Display circles within neurons that show the number of sample from each group that activate a given neuron."> 
-													<i class="tiny material-icons">help_outline</i></a>
-					    			  	    </label>
-					    			  	  </p>
-					    			  	  <p>
-					    			  	    <input name="group1" type="radio" id="hit" />
-					    			  	    <label for="hit">Hit Count</label>
-					    			  	    <a href="" class="tooltipped" data-position="right" data-tooltip="Colour neurons based on the majority class which activates a given neuron."> 
-													<i class="tiny material-icons">help_outline</i></a>
-					    			  	  </p>
-					    			  	  <p>
-					    			  	    <input class="with-gap" name="group1" type="radio" id="classColor"  />
-					    			  	    <label for="classColor">Class Weights</label>
-					    			  	    <a href="" class="tooltipped" data-position="right" data-tooltip="Assign colourmap for neurons based on the combined SOMDI weights for each neuron."> 
-					    			  	    								<i class="tiny material-icons">help_outline</i></a>
-					    			  	  </p>
-					    			  	</form>
-					    			  </li>
-					    			  <li class="collection-item"><strong>About</strong><br>
-					    			  	<p>The self organising map (SOM) provides a visual representation of the data as clusters.</p>
-					    			  	<button class="waves-effect waves-light btn disabled" id={{_id}}>more info</button>
-					    			  </li>
-					    			</ul>
 					    		</div>
 					    		{{#if Template.subscriptionsReady}}
 					    		<div class="col s8">
@@ -105,9 +60,10 @@
 					    	</div>
 					    </div>
 					    <div id="somdi" class="col s12">
-					    	
+					    	<div class="row">
+					    		{{>somdi}}
+					    	</div>
 					    </div>
 					    <div id="classification" class="col s12">Test 3</div>
 			</div>
-	</div>
 </template>
