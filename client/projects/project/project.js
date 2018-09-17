@@ -18,6 +18,12 @@ Template.project.helpers({
 	spectra: function(tag) {
 	    return Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}, {limit: 10});
 	},
+	spectraCount: function(tag) {
+		return Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}).count();
+	},
+	pages: function(tag) {
+		return Math.round(Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}).count() / 10);
+	},
 	formatDate: function(date) {
 		return moment(date).format('DD-MM-YYYY');
 	}
