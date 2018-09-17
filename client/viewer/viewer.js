@@ -24,7 +24,7 @@ Template.viewer.helpers({
 Template.viewer.onCreated(function() {
 	this.autorun(() => {
 	  this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-	  this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+	  this.spectraSubscription = this.subscribe('project:spectra:selected', SelectedSpectra.find({}).fetch().map((item)=>{return item._id}));
 	});
 
 	this.projectData = new ReactiveVar({name: ''});
@@ -40,7 +40,7 @@ Template.viewer.onRendered(function(){
 			var ids = SelectedSpectra.find({}).fetch().map((item)=>{return item._id});
 			var spectra = Spectra.find({_id: {$in: ids}});
 			spectra = spectra.map((item)=>{
-				return {mode: 'lines', x: item.x, y: item.y, name: item.file_meta.name}
+				return {mode: 'lines', x: item.x, y: item.y, name: item.label}
 			});
 
 			var layout = {

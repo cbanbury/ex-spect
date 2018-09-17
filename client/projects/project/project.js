@@ -16,7 +16,7 @@ Template.project.helpers({
 		]
 	},
 	spectra: function(tag) {
-	    return Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag});
+	    return Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}, {limit: 10});
 	},
 	formatDate: function(date) {
 		return moment(date).format('DD-MM-YYYY');
@@ -48,7 +48,7 @@ Template.project.events({
 Template.project.onCreated(function() {
 	this.autorun(() => {
 	  this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-	  this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+	  this.spectraSubscription = this.subscribe('project:spectra:meta', FlowRouter.getParam("id"));
 	});
 	this.projectData = new ReactiveVar({name: ''});
 	SelectedSpectra.remove();

@@ -16,8 +16,30 @@
                         <div class="chips"></div>
                         <label>Include Data</label>
                     </div>
-                    <div class="col s4">
+                    <div class="input-field col s6">
+                        <input placeholder="0.5" id="learning_rate" type="number" class="validate">
+                        <label class="active" for="learning_rate">Learning Rate</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="100" id="epochs" type="number" class="validate">
+                        <label class="active" for="epochs">Epochs</label>
+                    </div>
+                    <div class="col s6 switch">
+                        <label>
+                          LVQ
+                          <input type="checkbox">
+                          <span class="lever"></span>
+                        </label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="5" id="neighbourhood" type="number" class="validate">
+                        <label class="active" for="neighbourhood">Neighbourhood</label>
+                    </div>
+                    <div class="col s6">
                         <button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">{{runText}}</button>
+                    </div>
+                    <div class="col s6">
+                        <button id="saveModel" class="disabled waves-effect waves-light btn {{dataLoaded}}" type="submit">Save</button>
                     </div>
                 </form>
             </div>

@@ -7,6 +7,17 @@ html {
 	font-weight: 300;
 }
 
+.main {
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+footer {
+	magin-top: -50px;
+}
+
+
+
 @import "sass/footer";
 @import "sass/github-ribbon";
 @import "sass/homepage";
