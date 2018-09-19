@@ -38,13 +38,12 @@
                     <div class="col s6">
                         <button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">{{runText}}</button>
                     </div>
-                    <div class="col s6">
-                        <button id="saveModel" class="disabled waves-effect waves-light btn {{dataLoaded}}" type="submit">Save</button>
-                    </div>
                 </form>
+                <div class="col s6">
+                    <button id="saveModel" class="waves-effect waves-light btn {{canSave}} save-model">Save</button>
+                </div>
             </div>
             <div class="col s8">
-                <div class="row">
                     <div class="col s12">
                         <ul class="tabs som-tabs">
                             <li class="tab col s3"><a href="#somMap">Clustering (SOM)</a></li>
@@ -65,7 +64,6 @@
                         </div>
                     </div>
                     <div id="classification" class="col s12">Test 3</div>
-                    </div>
             </div>
         </div>
     </div>

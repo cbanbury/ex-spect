@@ -11,6 +11,15 @@ Template.som.events({
         }
         
         instance.calculateSOM(props);
+    },
+    'click .save-model':function() {
+      event.preventDefault();
+      Meteor.call('SOM:save', 
+        Template.instance().k.get().export(),
+        FlowRouter.getParam("id"),
+        Template.instance().spectraLabels.get()
+      );
+      Materialize.toast('Model saved', 2000);
     }
 });
 
@@ -46,6 +55,11 @@ Template.som.helpers({
       return 'disabled';
     }
   },
+  canSave: function() {
+    if (!Template.instance().somBuilt.get()) {
+      return 'disabled';
+    }
+  },
   runText: function() {
     if (Session.get('data-loaded')) {
       return 'Run';
@@ -62,15 +76,16 @@ Template.som.helpers({
 })
 
 Template.som.onCreated(function() {
-  this.autorun(()=>{
-   this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-   this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
-  });
-
   this.projectData = new ReactiveVar({name: ''});
   this.somBuilt = new ReactiveVar(false);
   this.k = new ReactiveVar();
   this.positions = new ReactiveVar();
+  this.spectraLabels = new ReactiveVar();
+
+  this.autorun(()=>{
+   this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
+   this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+  });
 });
 
 Template.som.onRendered(function() {
@@ -98,6 +113,7 @@ Template.som.onRendered(function() {
           var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
           return match[0].id;  
         });
+        Template.instance().spectraLabels.set(spectraLabels);
 
         // setup the self organising map
         var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
@@ -136,8 +152,8 @@ Template.som.onRendered(function() {
         }
     }
 
-    $('ul.som-tabs').tabs();
     $('select').material_select();
+    $('ul.som-tabs').tabs();
     this.autorun(()=>{
       if (this.projectSubscription.ready()) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));

@@ -13,21 +13,15 @@ Meteor.methods({
             autoSteps, autoSteps
         });
     },
-    'SOM:save': function(objectId, model, labelEnum) {
-        console.log(model)
+    'SOM:save': function(model, projectId, labelEnum) {
+        // make sure we don't duplicate the data
         delete model._data;
-        if (SOM.find({uid: Meteor.userId()}).count() >= 5) {
-            var last = SOM.findOne({uid: Meteor.userId(), _id: {$ne: objectId}}, {sort: {created_at: -1}, limit: 1});
-            SOM.remove({_id: last._id});
-        }
-        doc = {
-            complete: true,
+        SOM.insert({
             completed_at: new Date(),
             uid: Meteor.userId(),
             labels: labelEnum,
-            model: model
-        }
-
-        SOM.update({_id: objectId}, {$set: doc});
+            model: model,
+            projectId: projectId
+        });
     }
 })
