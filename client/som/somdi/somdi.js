@@ -19,9 +19,7 @@ Template.somdi.onCreated(function () {
 					name: label.tag
 				});
 			});
-
-			console.log(out)
-
+			
 			var layout = {
 			    autosize: true,
 			    // width: 350,
@@ -32,8 +30,6 @@ Template.somdi.onCreated(function () {
 			    yaxis: {
 			        title: 'Intensity'
 			    },
-			    // plot_bgcolor: '#eeeeee',
-			    // paper_bgcolor: '#eeeeee'
 			};
 
 			var d3 = Plotly.d3;

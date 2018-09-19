@@ -1,10 +1,16 @@
 Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
-        var labels = $('.chips').material_chip('data').map((item)=>{return item.tag});
-        var gridSize = event.target.gridSize.value;
+        var props = {
+          labels: $('.chips').material_chip('data').map((item)=>{return item.tag}),
+          gridSize: +event.target.gridSize.value,
+          learningRate: +event.target.learning_rate.value,
+          steps: +event.target.steps.value,
+          lvq: event.target.lvq.checked,
+          neighbourhood: +event.target.neighbourhood.value
+        }
         
-        instance.calculateSOM(labels, gridSize);
+        instance.calculateSOM(props);
     }
 });
 
@@ -68,10 +74,11 @@ Template.som.onCreated(function() {
 });
 
 Template.som.onRendered(function() {
-    this.calculateSOM = function (labels, gridSize) {
+    this.calculateSOM = function (props) {
         Template.instance().somBuilt.set(false);
         $('#runButton').text('building...');
         $('#runButton').attr('disabled', 'disabled')
+
         import Kohonen, {hexagonHelper} from 'kohonen';
         import _ from 'lodash/fp';
         var projectId = FlowRouter.getParam("id");
@@ -79,16 +86,13 @@ Template.som.onRendered(function() {
         var start = new Date().getTime();
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: labels}}, {y: 1, label: 1, labelId: 1}).fetch();
-        
-        var autoSteps = spectra.length * 10;
+            projectId: projectId, label: {$in: props.labels}}, {y: 1, label: 1, labelId: 1}).fetch();
 
         var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
-        
-        var updateInterval = Math.round(autoSteps / 10);
+        Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
 
         var labelEnum = [];
-        labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
+        props.labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
         
         var spectraLabels = spectra.map((spectrum)=>{
           var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
@@ -96,28 +100,33 @@ Template.som.onRendered(function() {
         });
 
         // setup the self organising map
-        var neurons = hexagonHelper.generateGrid(gridSize, gridSize);
-
+        var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
         const k = new Kohonen({
           data: _.map(_.get('y'), spectra),
           labels: spectraLabels,
           neurons, 
-          maxStep: autoSteps,
-          maxLearningCoef: 1,
-          minLearningCoef: 0.3,
-          maxNeighborhood: 1,
-          minNeighborhood: 0.3
+          maxStep: props.steps,
+          maxLearningCoef: props.learningRate,
+          minLearningCoef: 0.01,
+          maxNeighborhood: props.neighbourhood,
+          minNeighborhood: 0.01,
+          distance: 'manhattan',
+          norm: true
         });
 
         var instance = Template.instance();
         instance.k.set(k);
 
-        for (var i=0; i<autoSteps; i++) {
+        for (var i=0; i<props.steps; i++) {
           window.setTimeout(function(){
             var step = k.learnStep();
 
-            $('#runButton').text(Math.floor((step / autoSteps)*100) + '%');
-            if (step === autoSteps) {
+            $('#runButton').text(Math.floor((step / props.steps)*100) + '%');
+            if (step === props.steps) {
+              if (props.lvq) {
+                Materialize.toast('Running LVQ', 2000)
+                k.LVQ();
+              }
               $('#runButton').text('run');
               $('#runButton').attr('disabled', null)
               instance.somBuilt.set(true);
