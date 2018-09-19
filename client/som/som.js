@@ -127,6 +127,7 @@ Template.som.onRendered(function() {
         }
     }
 
+    $('ul.som-tabs').tabs();
     $('select').material_select();
     this.autorun(()=>{
       if (this.projectSubscription.ready()) {

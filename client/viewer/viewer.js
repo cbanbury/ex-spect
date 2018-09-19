@@ -43,6 +43,10 @@ Template.viewer.onRendered(function(){
 				return {mode: 'lines', x: item.x, y: item.y, name: item.label}
 			});
 
+			if (spectra.length < 1) {
+				FlowRouter.go('projects', {id: FlowRouter.getParam("id")});
+			}
+
 			var layout = {
 			    autosize: true,
 			    // width: 350,
@@ -52,9 +56,7 @@ Template.viewer.onRendered(function(){
 			    },
 			    yaxis: {
 			        title: 'Intensity'
-			    },
-			    plot_bgcolor: '#eeeeee',
-			    paper_bgcolor: '#eeeeee'
+			    }
 			};
 
 			var d3 = Plotly.d3;
