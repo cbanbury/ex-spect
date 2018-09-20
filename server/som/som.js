@@ -1,19 +1,5 @@
 Meteor.methods({
-    'SOM:seed': function(labels, projectId, neurons, autoSteps) {
-        var project = Projects.findOne({_id: projectId});
-
-        return SOM.insert({
-            uid: Meteor.userId(),
-            projectId: projectId,
-            projectName: project.name,
-            neurons: neurons,
-            complete: false,
-            created_at: new Date(),
-            progress: 0,
-            autoSteps, autoSteps
-        });
-    },
-    'SOM:save': function(model, projectId, labelEnum) {
+    'SOM:save': function(model, projectId, labelEnum, LVQ) {
         // make sure we don't duplicate the data
         delete model._data;
         SOM.insert({
@@ -21,7 +7,12 @@ Meteor.methods({
             uid: Meteor.userId(),
             labels: labelEnum,
             model: model,
-            projectId: projectId
+            projectId: projectId,
+            gridSize: Math.sqrt(model.numNeurons),
+            lvq: LVQ
         });
+    },
+    'SOM:delete': function(id) {
+        SOM.remove({uid: Meteor.userId(), _id: id});
     }
 })

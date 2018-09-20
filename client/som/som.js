@@ -1,3 +1,6 @@
+import Kohonen, {hexagonHelper} from 'kohonen';
+import _ from 'lodash/fp';
+
 Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
@@ -17,7 +20,8 @@ Template.som.events({
       Meteor.call('SOM:save', 
         Template.instance().k.get().export(),
         FlowRouter.getParam("id"),
-        Template.instance().spectraLabels.get()
+        Template.instance().labelEnum.get(),
+        $('#lvq').is(':checked')
       );
       Materialize.toast('Model saved', 2000);
     }
@@ -36,8 +40,12 @@ Template.som.helpers({
         title: project.name
       },
       {
-        path: '',
+        path: '/projects/' + FlowRouter.getParam("id") + '/models',
         title: 'Machine Learning'
+      },
+      {
+        path: '',
+        title: 'Model'
       }
     ]
   },
@@ -80,22 +88,33 @@ Template.som.onCreated(function() {
   this.somBuilt = new ReactiveVar(false);
   this.k = new ReactiveVar();
   this.positions = new ReactiveVar();
-  this.spectraLabels = new ReactiveVar();
+  this.labelEnum = new ReactiveVar();
 
   this.autorun(()=>{
    this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
    this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+
+   if (FlowRouter.getQueryParam('m')) {
+    this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getQueryParam('m'));
+   }
   });
 });
 
 Template.som.onRendered(function() {
-    this.calculateSOM = function (props) {
+    this.mapLabels = (spectra, labelEnum)=>{
+      return spectra.map((spectrum)=>{
+          var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
+          if (match && match.length === 1) {
+            return match[0].id;  
+          }
+      });
+    }
+
+    this.calculateSOM = (props)=> {
         Template.instance().somBuilt.set(false);
         $('#runButton').text('building...');
         $('#runButton').attr('disabled', 'disabled')
 
-        import Kohonen, {hexagonHelper} from 'kohonen';
-        import _ from 'lodash/fp';
         var projectId = FlowRouter.getParam("id");
 
         var start = new Date().getTime();
@@ -109,17 +128,13 @@ Template.som.onRendered(function() {
         var labelEnum = [];
         props.labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
         
-        var spectraLabels = spectra.map((spectrum)=>{
-          var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
-          return match[0].id;  
-        });
-        Template.instance().spectraLabels.set(spectraLabels);
+        Template.instance().labelEnum.set(labelEnum);
 
         // setup the self organising map
         var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
         const k = new Kohonen({
           data: _.map(_.get('y'), spectra),
-          labels: spectraLabels,
+          labels: this.mapLabels(spectra, labelEnum),
           neurons, 
           maxStep: props.steps,
           maxLearningCoef: props.learningRate,
@@ -146,6 +161,7 @@ Template.som.onRendered(function() {
               $('#runButton').text('run');
               $('#runButton').attr('disabled', null)
               instance.somBuilt.set(true);
+              instance.k.set(k);
               instance.positions.set(k.mapping());
             }
           }, 0);
@@ -164,6 +180,30 @@ Template.som.onRendered(function() {
 
       if (this.spectraSubscription.ready()) {
         Session.set('data-loaded', true);
+
+        if (this.modelSubscription.ready()) {
+          var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
+          var spectra = Spectra.find({projectId: FlowRouter.getParam("id"), 
+            label: {$in: som.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
+        
+          // deserialize the model
+          var k = new Kohonen();
+          k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.labels), som.model);
+
+          // set properties
+          Template.instance().k.set(k);
+          $('#learning_rate').val(som.model.maxLearningCoef)
+          $('#steps').val(som.model.maxStep)
+          $('#neighbourhood').val(som.model.maxNeighborhood)
+          if (som.lvq) {
+            $('#lvq').prop('checked', true)
+          }
+          $('.select-dropdown').val(som.gridSize + 'x' + som.gridSize)
+          $('.chips').material_chip({data: som.labels})
+          
+          Template.instance().positions.set(k.mapping());
+          Template.instance().somBuilt.set(true);
+        }
       }
     });
 });

@@ -67,11 +67,11 @@ Template.somPlot.helpers({
 		return pathGenfunction(neuron);
 	},
 	neurons: function() {
-		const haxagonsByLine = Math.sqrt(Template.instance().data.k.numNeurons);
+		const haxagonsByLine = Math.sqrt(Template.instance().data.k.neurons.length);
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
 	viewBoxSize: function() {
-		return (Math.sqrt(Template.instance().data.k.numNeurons + 1)) * 13;
+		return (Math.sqrt(Template.instance().data.k.neurons.length + 1)) * 13;
 	},
 	classes: function() {
 		return Template.instance().data.labels;
