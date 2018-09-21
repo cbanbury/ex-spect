@@ -140,7 +140,7 @@ Template.som.onRendered(function() {
           maxLearningCoef: props.learningRate,
           minLearningCoef: 0.01,
           maxNeighborhood: props.neighbourhood,
-          minNeighborhood: 0.01,
+          minNeighborhood: 0.1,
           distance: 'manhattan',
           norm: true
         });
