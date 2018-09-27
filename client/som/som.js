@@ -120,7 +120,7 @@ Template.som.onRendered(function() {
         var start = new Date().getTime();
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: props.labels}}, {y: 1, label: 1, labelId: 1}).fetch();
+            projectId: projectId, label: {$in: props.labels}}, {y: 1, label: 1, labelId: 1}, {limit: 968}).fetch();
 
         var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
         Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
@@ -138,10 +138,10 @@ Template.som.onRendered(function() {
           neurons, 
           maxStep: props.steps,
           maxLearningCoef: props.learningRate,
-          minLearningCoef: 0.01,
+          minLearningCoef: 0.001,
           maxNeighborhood: props.neighbourhood,
-          minNeighborhood: 0.01,
-          distance: 'manhattan',
+          minNeighborhood: 0.1,
+          // distance: 'manhattan',
           norm: true
         });
 
@@ -200,7 +200,7 @@ Template.som.onRendered(function() {
           }
           $('.select-dropdown').val(som.gridSize + 'x' + som.gridSize)
           $('.chips').material_chip({data: som.labels})
-          
+
           Template.instance().positions.set(k.mapping());
           Template.instance().somBuilt.set(true);
         }
