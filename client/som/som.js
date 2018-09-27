@@ -141,7 +141,7 @@ Template.som.onRendered(function() {
           minLearningCoef: 0.001,
           maxNeighborhood: props.neighbourhood,
           minNeighborhood: 0.1,
-          // distance: 'manhattan',
+          distance: 'manhattan',
           norm: true
         });
 
