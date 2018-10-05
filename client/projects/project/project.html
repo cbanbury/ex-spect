@@ -1,0 +1,80 @@
+<template name="project">
+	<div class="container">
+		{{>breadcrumbs crumbs=crumbs}}
+		<div class="section">
+			<div class="row">
+				<div class="col s4 center-align">
+					<a class="waves-effect waves-light btn project-settings">Settings</a>
+				</div>
+				<div class="col s4 center-align">
+					<a class="waves-effect waves-light btn machine-learning">Machine Learning</a>
+				</div>
+			</div>
+		</div>
+		<div class='divider'></div>
+		<div class="section">
+			<div class="row">
+				<div class="col s3">
+					<h5>Spectra</h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col s4 center-align">
+					<a class="waves-effect waves-light btn disabled">Select All</a>
+				</div>
+				<div class="col s4 center-align">
+					<a class="waves-effect waves-light btn view-data">View</a>
+				</div>
+				<div class="col s4 center-align">
+					<a class="waves-effect waves-light btn disabled">Delete</a>
+				</div>
+			</div>
+			<ul class="collapsible" data-collapsible="accordion">
+				{{#each project.labels}}
+					<li>
+						<div class="collapsible-header">
+							<strong>{{tag}} ({{spectraCount tag}})</strong>
+						</div>
+						<div class="collapsible-body">
+							<div class="row">
+								<div class="col s3 center-align">
+									<a class="waves-effect waves-light btn upload-data">Add Data</a>
+								</div>
+							</div>
+							<table class="responsive-table">
+								<thead>
+									<tr>
+										<th>Select</th>
+										<th>Filename</th>
+										<th>Date</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each spectra tag}}
+										<tr>
+											<td>
+												<input type="checkbox" class="select-spectrum" id="{{_id}}" data-tag="{{label}}" />
+												<label for="{{_id}}"></label>
+											</td>
+											<td ><p style="text-overflow: ellipsis; overflow: hidden; max-width: 40vw">{{file_meta.name}}</p></td>
+											<td>{{formatDate file_meta.lastModified}}</td>
+										</tr>
+									{{/each}}
+								</tbody>
+							</table>
+							<ul class="pagination">
+							   <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+							   <li class="active"><a href="#!">1</a></li>
+							   <li class="waves-effect"><a href="#!">2</a></li>
+							   <li class="waves-effect"><a href="#!">3</a></li>
+							   <li class="waves-effect"><a href="#!">4</a></li>
+							   <li class="waves-effect"><a href="#!">5</a></li>
+							   <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+							 </ul>
+						</div>
+					</li>
+				{{/each}}
+			</ul>
+		</div>
+	</div>
+</template>

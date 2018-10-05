@@ -1,0 +1,43 @@
+<template name="somModels">
+	<div class="container">
+		<div class="row">
+			{{>breadcrumbs crumbs=crumbs}}
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<a class="waves-effect waves-light btn new-model">new</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<table>
+				   <thead>
+				     <tr>
+				         <th>Grid Size</th>
+				         <th>Learning Rate</th>
+				         <th>Learning Steps</th>
+				         <th>Neighbourhood Size</th>
+				         <th>LVQ</th>
+				         <th></th>
+				     </tr>
+				   </thead>
+				   <tbody>
+				   	{{#each models}}
+				   		<tr>
+				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
+				   		  <td>{{this.model.maxLearningCoef}}</td>
+				   		  <td>{{this.model.maxStep}}</td>
+				   		  <td>{{this.model.maxNeighborhood}}</td>
+				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
+				   		  <td>
+				   		  	<a class="waves-effect waves-light btn load-model" id="{{this._id}}">load</a>
+				   		  	<a class="waves-effect waves-light btn del-model red" id="{{this._id}}">del</a>
+				   		  </td>
+				   		</tr>
+				   	{{/each}}
+				   </tbody>
+				 </table>
+			</div>
+		</div>
+	</div>
+</template>

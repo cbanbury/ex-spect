@@ -1,145 +1,209 @@
+import Kohonen, {hexagonHelper} from 'kohonen';
+import _ from 'lodash/fp';
+
 Template.som.events({
-    'submit .searchClass': function(event) {
+    'submit .compute-som': function(event, instance) {
         event.preventDefault();
-        calculateSom(event.target.classes.value.split(','));
+        var props = {
+          labels: $('.chips').material_chip('data').map((item)=>{return item.tag}),
+          gridSize: +event.target.gridSize.value,
+          learningRate: +event.target.learning_rate.value,
+          steps: +event.target.steps.value,
+          lvq: event.target.lvq.checked,
+          neighbourhood: +event.target.neighbourhood.value
+        }
+        
+        instance.calculateSOM(props);
+    },
+    'click .save-model':function() {
+      event.preventDefault();
+      Meteor.call('SOM:save', 
+        Template.instance().k.get().export(),
+        FlowRouter.getParam("id"),
+        Template.instance().labelEnum.get(),
+        $('#lvq').is(':checked')
+      );
+      Materialize.toast('Model saved', 2000);
     }
 });
 
-Template.som.onRendered(function() {
-    this.percentTrained = new ReactiveVar();
-    Meteor.subscribe('spectra', function() {
-        calculateSom();
-    });
+Template.som.helpers({
+  'crumbs': function() {
+    var project = Template.instance().projectData.get();
+    return [
+      {
+        path: '/projects',
+        title: 'Projects'
+      },
+      {
+        path: '/projects/' + project._id,
+        title: project.name
+      },
+      {
+        path: '/projects/' + FlowRouter.getParam("id") + '/models',
+        title: 'Machine Learning'
+      },
+      {
+        path: '',
+        title: 'Model'
+      }
+    ]
+  },
+  labels: function() {
+    return $('.chips').material_chip('data');
+  },
+  somBuilt: function () {
+    return Template.instance().somBuilt.get();
+  },
+  gridSizes: function() {
+    return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  },
+  dataLoaded: function() {
+    if (!Session.get('data-loaded')) {
+      return 'disabled';
+    }
+  },
+  canSave: function() {
+    if (!Template.instance().somBuilt.get()) {
+      return 'disabled';
+    }
+  },
+  runText: function() {
+    if (Session.get('data-loaded')) {
+      return 'Run';
+    }
+
+    return 'Loading'
+  },
+  k: function() {
+    return Template.instance().k.get();
+  },
+  positions: function() {
+    return Template.instance().positions.get();
+  }
+})
+
+Template.som.onCreated(function() {
+  this.projectData = new ReactiveVar({name: ''});
+  this.somBuilt = new ReactiveVar(false);
+  this.k = new ReactiveVar();
+  this.positions = new ReactiveVar();
+  this.labelEnum = new ReactiveVar();
+
+  this.autorun(()=>{
+   this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
+   this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
+
+   if (FlowRouter.getQueryParam('m')) {
+    this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getQueryParam('m'));
+   }
+  });
 });
 
-function calculateSom(percentTrained) {
-    import Kohonen, {hexagonHelper} from 'kohonen';
-    import d3 from 'd3';
+Template.som.onRendered(function() {
+    this.mapLabels = (spectra, labelEnum)=>{
+      return spectra.map((spectrum)=>{
+          var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
+          if (match && match.length === 1) {
+            return match[0].id;  
+          }
+      });
+    }
 
-    var spectra = Spectra.find().fetch();
-    var data = spectra.map(function(item) {
-        return item.y;
-    });
+    this.calculateSOM = (props)=> {
+        Template.instance().somBuilt.set(false);
+        $('#runButton').text('building...');
+        $('#runButton').attr('disabled', 'disabled')
 
-    // var data = [
-    //     [255, 0 , 0],
-    //     [180, 0 , 0],
-    //     [150, 0 , 0],
-    //     [80, 0 , 0],
-    //     [100, 0 , 0],
-    //     [0, 255, 0],
-    //     [0, 0, 255],
-    //     [50, 0, 0],
-    //     [0, 100, 0],
-    //     [0, 120, 0]
-    // ];
+        var projectId = FlowRouter.getParam("id");
 
-    // setup the self organising map
-    var hexagonData = hexagonHelper.generateGrid(10, 10);
-    const k = new Kohonen({data, neurons: hexagonData, maxStep: 50000});
-    console.log('Starting training')
-    var start = new Date().getTime();
-    var percent = 100 / 2000;
-    k.training(function() {
-        percent = percent + (100 / 2000);
-        console.log('step complete')
-    });
-    var end = new Date().getTime();
-    console.log('past training in: ' + (end-start)/1000);
-    var somData = k.mapping();
-    console.log('got results');
-    console.log(somData);
+        var start = new Date().getTime();
 
-    // the umatrix is a greyscale map that allows automatic visualisations.
-    // not using it here to let us define colours based on how they are defined
-    // in the data.
-    // var umatrix = k.umatrix();
+        var spectra = Spectra.find({uid: Meteor.userId(), 
+            projectId: projectId, label: {$in: props.labels}}, {y: 1, label: 1, labelId: 1}, {limit: 968}).fetch();
 
-    // scale up the hexagons so we can visualise it on screen
-    const stepX = 25;
-    const scaleGrid = d3.scaleLinear()
-        .domain([0, 1])
-        .range([0, stepX]);
+        var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
+        Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
 
+        var labelEnum = [];
+        props.labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
+        
+        Template.instance().labelEnum.set(labelEnum);
 
-    // D3 View stuff
-    //svg sizes and margins
-    var margin = {
-        top: 10,
-        right: 0,
-        bottom: 0,
-        left: 10
-    },
-    width = 800,
-    height = 800;
+        // setup the self organising map
+        var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
+        const k = new Kohonen({
+          data: _.map(_.get('y'), spectra),
+          labels: this.mapLabels(spectra, labelEnum),
+          neurons, 
+          maxStep: props.steps,
+          maxLearningCoef: props.learningRate,
+          minLearningCoef: 0.001,
+          maxNeighborhood: props.neighbourhood,
+          minNeighborhood: 0.1,
+          distance: 'manhattan',
+          norm: true
+        });
 
-    //Create SVG element
-    var svg = d3.select("#chart").append("svg")
-       .attr("width", width + margin.left + margin.right)
-       .attr("height", height + margin.top + margin.bottom)
-       .append("g")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var instance = Template.instance();
+        instance.k.set(k);
 
-       const hexagonPath = function([x, y]) {
-           // compute the radius of an hexagon
-           const radius = (stepX / 2) / Math.cos(Math.PI / 6);
-           return d3.range(-Math.PI / 2, 2 * Math.PI, 2 * Math.PI / 6)
-           .map(a => [x + Math.cos(a) * radius, y + Math.sin(a) * radius]);
-       }
+        for (var i=0; i<props.steps; i++) {
+          window.setTimeout(function(){
+            var step = k.learnStep();
 
-       const gGrid = svg.append('g')
-       .attr('id', 'g-grid');
-
-       const grid = gGrid.selectAll('.grid').data(hexagonData);
-       grid.enter().append('path')
-       .attr('class', 'grid')
-       .attr('d', function(center) {
-           return d3.line()(hexagonPath(center.pos.map(scaleGrid)));
-       })
-       .attr('fill', function(currentHexagon) {
-           // find the element in our data that matches the current co-ordinate
-            var index = 0;
-            var foo = somData.find(function(value, i) {
-                index = i;
-                return value === currentHexagon.pos;
-            });
-
-            // set colour to match the RGB value from the datas
-            if (foo) {
-                return 'rgb(255, 0, 0)';
+            $('#runButton').text(Math.floor((step / props.steps)*100) + '%');
+            if (step === props.steps) {
+              if (props.lvq) {
+                Materialize.toast('Running LVQ', 2000)
+                k.LVQ();
+              }
+              $('#runButton').text('run');
+              $('#runButton').attr('disabled', null)
+              instance.somBuilt.set(true);
+              instance.k.set(k);
+              instance.positions.set(k.mapping());
             }
-            return 'rgb(255, 255, 255)';
-       })
-       .attr('stroke', '#ccc');
+          }, 0);
+        }
+    }
 
-       var chart2 = d3.select("#chart2").append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    $('select').material_select();
+    $('ul.som-tabs').tabs();
+    this.autorun(()=>{
+      if (this.projectSubscription.ready()) {
+        Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
+        $('.chips').material_chip({
+          data: Template.instance().projectData.get().labels
+        });
+      }
 
-       const mGrid = chart2.append('g')
-       .attr('id', 'g-grid');
+      if (this.spectraSubscription.ready()) {
+        Session.set('data-loaded', true);
 
-       const grid2 = mGrid.selectAll('.grid').data(hexagonData);
-       grid2.enter().append('path')
-       .attr('class', 'grid')
-       .attr('d', function(center) {
-           return d3.line()(hexagonPath(center.pos.map(scaleGrid)));
-       })
-       .attr('fill', function(currentHexagon) {
-           // find the element in our data that matches the current co-ordinate
-            var index = 0;
-            var foo = somData.find(function(value, i) {
-                index = i;
-                return value === currentHexagon.pos;
-            });
+        if (this.modelSubscription.ready()) {
+          var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
+          var spectra = Spectra.find({projectId: FlowRouter.getParam("id"), 
+            label: {$in: som.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
+        
+          // deserialize the model
+          var k = new Kohonen();
+          k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.labels), som.model);
 
-            // set colour to match the RGB value from the datas
-            if (foo && data[index][0] > 50) {
-                return 'rgb(255, 214, 0)';
-            }
-            return 'rgb(93, 64, 55)';
-       })
-       .attr('stroke', '#ccc');
-};
+          // set properties
+          Template.instance().k.set(k);
+          $('#learning_rate').val(som.model.maxLearningCoef)
+          $('#steps').val(som.model.maxStep)
+          $('#neighbourhood').val(som.model.maxNeighborhood)
+          if (som.lvq) {
+            $('#lvq').prop('checked', true)
+          }
+          $('.select-dropdown').val(som.gridSize + 'x' + som.gridSize)
+          $('.chips').material_chip({data: som.labels})
+
+          Template.instance().positions.set(k.mapping());
+          Template.instance().somBuilt.set(true);
+        }
+      }
+    });
+});

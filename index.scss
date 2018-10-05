@@ -1,10 +1,25 @@
-@import "{poetic:materialize-scss}/sass/components/_color.scss";
+@import "{materialize:materialize}/sass/components/_color.scss";
 @import "sass/pallette.scss";
+@import "{materialize:materialize}/sass/materialize.scss";
 
-@import "{poetic:materialize-scss}/sass/materialize.scss";
+html {
+	font-family: "Roboto", sans serif;
+	font-weight: 300;
+}
 
-@import "sass/sidebar";
+.main {
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+footer {
+	magin-top: -50px;
+}
+
+
+
 @import "sass/footer";
 @import "sass/github-ribbon";
 @import "sass/homepage";
 @import "sass/errors";
+@import "sass/som";

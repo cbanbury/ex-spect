@@ -1,18 +1,69 @@
 <template name="som">
     <div class="container">
+      {{>breadcrumbs crumbs=crumbs}}
         <div class="row">
-            <form class="searchClass">
-                <div class="input-field col s6">
-                    <input type="text" id="classes" name="classes" class="validate" placeholder="healthy,diseased" required>
-                    <label class="active" for="classes">Tags</label>
+            <div class="col s4">
+                <form class="compute-som">
+                    <div class="input-field col s12">
+                        <select class="grid-size-select" id="gridSize">
+                          {{#each gridSizes}}
+                              <option value="{{this}}">{{this}}x{{this}}</option>
+                          {{/each}}
+                        </select>
+                        <label>Grid Size</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <div class="chips"></div>
+                        <label>Include Data</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input value=0.5 min=0 max=10 step=0.01 id="learning_rate" type="number" class="validate">
+                        <label class="active" for="learning_rate">Learning Rate</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input value="1000" min=0 step=1 max=1000000 id="steps" type="number" class="validate">
+                        <label class="active" for="steps">Learning Steps</label>
+                    </div>
+                    <div class="col s6 switch">
+                        <label>
+                          LVQ
+                          <input type="checkbox" id="lvq">
+                          <span class="lever"></span>
+                        </label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input value="5" min=0.1 max=13 step=0.01 id="neighbourhood" type="number" class="validate">
+                        <label class="active" for="neighbourhood">Neighbourhood</label>
+                    </div>
+                    <div class="col s6">
+                        <button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">{{runText}}</button>
+                    </div>
+                </form>
+                <div class="col s6">
+                    <button id="saveModel" class="waves-effect waves-light btn {{canSave}} save-model">Save</button>
                 </div>
-                <button typ="submit">Search</button>
-            </form>
-            <div class="row">
-                <div class="col m6 offset-m3 s12 center-align">
-                    {{percentTrained}}
-                    <div id="chart"></div>
-                </div>
+            </div>
+            <div class="col s8">
+                    <div class="col s12">
+                        <ul class="tabs som-tabs">
+                            <li class="tab col s3"><a href="#somMap">Clustering (SOM)</a></li>
+                            <li class="tab col s3"><a href="#somdi">Features (SOMDI)</a></li>
+                            <li class="tab col s3 disabled"><a href="#classification">Classification</a></li>
+                        </ul>
+                    </div>
+                    <div id="somMap" class="col s12">
+                        {{#if somBuilt}}
+                            {{>somPlot k=k labels=labels positions=positions}}
+                        {{/if}}
+                    </div>
+                    <div id="somdi" class="col s12">
+                        <div class="row">
+                            {{#if somBuilt}}
+                                {{>somdi k=k labels=labels}}
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div id="classification" class="col s12">Test 3</div>
             </div>
         </div>
     </div>

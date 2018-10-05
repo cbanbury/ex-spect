@@ -9,3 +9,7 @@ Spectra.allow({
         }
     }
 })
+
+
+Projects.permit('insert').ifLoggedIn();
+Projects.permit('remove').ifLoggedIn();
