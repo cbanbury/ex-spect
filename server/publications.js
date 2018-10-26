@@ -11,7 +11,7 @@ Meteor.publish("project:spectra", function(projectId) {
 });
 
 Meteor.publish("project:spectra:meta", function(projectId) {
-    return Spectra.find({uid: this.userId, projectId: projectId}, {x: 0, y: 0});
+    return Spectra.find({uid: this.userId, projectId: projectId}, {fields: {x: 0, y: 0}});
 });
 
 Meteor.publish("project:spectra:selected", function(ids) {

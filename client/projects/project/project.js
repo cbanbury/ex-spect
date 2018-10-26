@@ -1,9 +1,9 @@
 Template.project.helpers({
 	'project': function() {
-		return Template.instance().projectData.get();
+		return Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 	},
 	'crumbs': function() {
-		var project = Template.instance().projectData.get();
+		var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 		return [
 			{
 				path: '/projects',
@@ -52,19 +52,9 @@ Template.project.events({
 });
 
 Template.project.onCreated(function() {
-	this.autorun(() => {
-	  this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-	  this.spectraSubscription = this.subscribe('project:spectra:meta', FlowRouter.getParam("id"));
-	});
-	this.projectData = new ReactiveVar({name: ''});
 	SelectedSpectra.remove();
 });
 
-Template.project.onRendered(function(){
-	this.autorun(()=>{
-		if (this.projectSubscription.ready()) {
-			$('.collapsible').collapsible();
-			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-		}
-	})
+Template.project.onRendered(function() {
+	$('.collapsible').collapsible();
 });

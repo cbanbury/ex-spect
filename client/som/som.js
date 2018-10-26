@@ -90,14 +90,6 @@ Template.som.onCreated(function() {
   this.positions = new ReactiveVar();
   this.labelEnum = new ReactiveVar();
 
-  this.autorun(()=>{
-   this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-   this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
-
-   if (FlowRouter.getQueryParam('m')) {
-    this.modelSubscription = this.subscribe('SOM:model', FlowRouter.getQueryParam('m'));
-   }
-  });
 });
 
 Template.som.onRendered(function() {
@@ -171,21 +163,21 @@ Template.som.onRendered(function() {
     $('select').material_select();
     $('ul.som-tabs').tabs();
     this.autorun(()=>{
-      if (this.projectSubscription.ready()) {
+      if (FlowRouter.subsReady('projectSub')) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
         $('.chips').material_chip({
           data: Template.instance().projectData.get().labels
         });
       }
 
-      if (this.spectraSubscription.ready()) {
+      if (FlowRouter.subsReady()) {
         Session.set('data-loaded', true);
 
-        if (this.modelSubscription.ready()) {
+        if (FlowRouter.getQueryParam('m')) {
           var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
           var spectra = Spectra.find({projectId: FlowRouter.getParam("id"), 
             label: {$in: som.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
-        
+          
           // deserialize the model
           var k = new Kohonen();
           k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.labels), som.model);

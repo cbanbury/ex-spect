@@ -1,9 +1,5 @@
 
 Template.upload.onCreated(function() {
-    this.autorun(() => {
-      this.subscribe('project', FlowRouter.getParam("id"));
-    });
-
     this.saveText = new ReactiveVar('save');
 });
 
@@ -60,6 +56,7 @@ Template.upload.events({
             }
 
             if (i < numFiles) new Promise((resolve, reject) => {
+                $('#upload').text(Math.floor((i / numFiles)*100) + '%');
                 if (files[i].type !== 'text/plain') {
                     return resolve();
                 }

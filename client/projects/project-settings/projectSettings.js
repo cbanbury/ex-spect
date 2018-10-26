@@ -7,7 +7,7 @@ Template.projectSettings.helpers({
 				title: 'Projects'
 			},
 			{
-				path: '',
+				path: '/projects/' + project._id,
 				title: project.name
 			},
 			{
@@ -22,16 +22,13 @@ Template.projectSettings.helpers({
 });
 
 Template.projectSettings.onCreated(function() {
-	this.autorun(() => {
-	  this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-	});
 	this.projectData = new ReactiveVar({name: ''});
 });
 
 
 Template.projectSettings.onRendered(function(){
 	this.autorun(()=>{
-		if (this.projectSubscription.ready()) {
+		if (FlowRouter.subsReady()) {
 			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
 
 			$('.chips').material_chip({

@@ -15,5 +15,5 @@ Meteor.methods({
             uid: Meteor.userId(),
             _id: id
         });
-    }
+    },
 });

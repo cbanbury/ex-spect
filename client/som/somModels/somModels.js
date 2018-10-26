@@ -1,20 +1,3 @@
-Template.somModels.onCreated(function() {
-	this.autorun(()=>{
-		this.projectSubscription = this.subscribe('project', FlowRouter.getParam("id"));
-		this.modelSubscription = this.subscribe('SOM')
-	});
-
-	this.projectData = new ReactiveVar({name: ''});
-});
-
-Template.somModels.onRendered(function(){
-	this.autorun(()=>{
-		if (this.projectSubscription.ready()) {
-			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-		}
-	})
-});
-
 Template.somModels.events({
 	'click .new-model':function() {
 		FlowRouter.go('learn', {id: FlowRouter.getParam("id")});
@@ -32,7 +15,7 @@ Template.somModels.helpers({
 		return SOM.find({projectId: FlowRouter.getParam("id")}, {sort: {completed_at: -1}});
 	},
 	'crumbs': function() {
-		var project = Template.instance().projectData.get();
+		var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 		return [
 			{
 				path: '/projects',
