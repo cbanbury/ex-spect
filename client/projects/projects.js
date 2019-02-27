@@ -16,6 +16,6 @@ Template.projects.events({
 
 Template.projects.helpers({
 	projects: function() {
-		return Projects.find({uid: Meteor.userId()});
+		return Projects.find({uid: Meteor.userId()}, {sort: {_id: -1}});
 	}
 });
