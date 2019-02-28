@@ -52,7 +52,7 @@ Template.viewer.onRendered(function(){
 			    // width: 350,
 			    // height: 250,
 			    xaxis: {
-			        title: 'Wavenumber (cm / -1)'
+			        title: 'Raman Shift (cm' + String.fromCharCode(8315) + String.fromCharCode(185) + ')'
 			    },
 			    yaxis: {
 			        title: 'Intensity'
