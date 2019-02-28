@@ -5,12 +5,8 @@
             <div class="col s4">
                 <form class="compute-som">
                     <div class="input-field col s12">
-                        <select class="grid-size-select" id="gridSize">
-                          {{#each gridSizes}}
-                              <option value="{{this}}">{{this}}x{{this}}</option>
-                          {{/each}}
-                        </select>
-                        <label>Grid Size</label>
+                        <input value=10 min=0 max=20 step=1 id="gridSize" type="number" class="validate">
+                        <label class="active" for="gridSize">Grid Size (NxN)</label>
                     </div>
                     <div class="input-field col s12">
                         <div class="chips"></div>
@@ -53,13 +49,13 @@
                     </div>
                     <div id="somMap" class="col s12">
                         {{#if somBuilt}}
-                            {{>somPlot k=k labels=labels positions=positions}}
+                            {{>somPlot k=k positions=positions}}
                         {{/if}}
                     </div>
                     <div id="somdi" class="col s12">
                         <div class="row">
                             {{#if somBuilt}}
-                                {{>somdi k=k labels=labels}}
+                                {{>somdi k=k}}
                             {{/if}}
                         </div>
                     </div>

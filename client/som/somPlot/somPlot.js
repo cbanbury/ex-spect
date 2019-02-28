@@ -18,7 +18,7 @@ Template.somPlot.onCreated(function() {
 	  	.domain([0, 1])
 	  	.range([0, this.stepX]);
 
-	var classes = this.data.labels.map((item)=>{return item.id});
+	var classes = this.data.k.labelEnum.map((item)=>{return item.id});
 	 const scaleColor = scaleBand()
 		.domain(classes)
 		.range([1, 0]);
@@ -74,7 +74,7 @@ Template.somPlot.helpers({
 		return (Math.sqrt(Template.instance().data.k.neurons.length + 1)) * 13;
 	},
 	classes: function() {
-		return Template.instance().data.labels;
+		return Template.instance().data.k.labelEnum;
 	},
 	getColor: function(input) {
 		return Template.instance().getColor(input);
@@ -92,7 +92,7 @@ Template.somPlot.helpers({
 			  .force("x", d3.forceX(Template.instance().getX))
 			  .force("y", d3.forceY(Template.instance().getY))
 			  .force('collision', d3.forceCollide().radius(function(d) {
-			    return 0.5;
+			    return 0.3;
 			  }))
 			  .on('tick', ticked);
 
@@ -104,7 +104,7 @@ Template.somPlot.helpers({
 			  u.enter()
 			    .append('circle')
 			    .attr('r', function(d) {
-			      return 0.5
+			      return 0.3
 			    })
 			    .merge(u)
 			    .attr('cx', _.get('x'))

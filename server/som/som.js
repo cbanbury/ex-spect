@@ -1,11 +1,10 @@
 Meteor.methods({
-    'SOM:save': function(model, projectId, labelEnum, LVQ) {
+    'SOM:save': function(model, projectId, LVQ) {
         // make sure we don't duplicate the data
         delete model._data;
         SOM.insert({
             completed_at: new Date(),
             uid: Meteor.userId(),
-            labels: labelEnum,
             model: model,
             projectId: projectId,
             gridSize: Math.sqrt(model.numNeurons),

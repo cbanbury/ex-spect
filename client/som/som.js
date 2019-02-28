@@ -4,8 +4,15 @@ import _ from 'lodash/fp';
 Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
+
+        var labelEnum = [];
+        var labels = $('.chips').material_chip('data');
+        labels.forEach(function(label, index) {
+          labelEnum.push({tag: label.tag, id: index});
+        });
+
         var props = {
-          labels: $('.chips').material_chip('data').map((item)=>{return item.tag}),
+          labels: labelEnum,
           gridSize: +event.target.gridSize.value,
           learningRate: +event.target.learning_rate.value,
           steps: +event.target.steps.value,
@@ -20,7 +27,6 @@ Template.som.events({
       Meteor.call('SOM:save', 
         Template.instance().k.get().export(),
         FlowRouter.getParam("id"),
-        Template.instance().labelEnum.get(),
         $('#lvq').is(':checked')
       );
       Materialize.toast('Model saved', 2000);
@@ -55,9 +61,6 @@ Template.som.helpers({
   somBuilt: function () {
     return Template.instance().somBuilt.get();
   },
-  gridSizes: function() {
-    return [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-  },
   dataLoaded: function() {
     if (!Session.get('data-loaded')) {
       return 'disabled';
@@ -88,8 +91,6 @@ Template.som.onCreated(function() {
   this.somBuilt = new ReactiveVar(false);
   this.k = new ReactiveVar();
   this.positions = new ReactiveVar();
-  this.labelEnum = new ReactiveVar();
-
 });
 
 Template.som.onRendered(function() {
@@ -112,21 +113,17 @@ Template.som.onRendered(function() {
         var start = new Date().getTime();
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: props.labels}}, {y: 1, label: 1, labelId: 1}, {limit: 968}).fetch();
+            projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}, {limit: 968}).fetch();
 
-        var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
-        Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
-
-        var labelEnum = [];
-        props.labels.map((item, index)=>{labelEnum.push({tag: item, id: index})});
-        
-        Template.instance().labelEnum.set(labelEnum);
+        // var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
+        // Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
 
         // setup the self organising map
         var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
         const k = new Kohonen({
           data: _.map(_.get('y'), spectra),
-          labels: this.mapLabels(spectra, labelEnum),
+          labels: this.mapLabels(spectra, props.labels),
+          labelEnum: props.labels,
           neurons, 
           maxStep: props.steps,
           maxLearningCoef: props.learningRate,
@@ -147,7 +144,7 @@ Template.som.onRendered(function() {
             $('#runButton').text(Math.floor((step / props.steps)*100) + '%');
             if (step === props.steps) {
               if (props.lvq) {
-                Materialize.toast('Running LVQ', 2000)
+                // Materialize.toast('Running LVQ', 2000)
                 k.LVQ();
               }
               $('#runButton').text('run');
@@ -176,11 +173,11 @@ Template.som.onRendered(function() {
         if (FlowRouter.getQueryParam('m')) {
           var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
           var spectra = Spectra.find({projectId: FlowRouter.getParam("id"), 
-            label: {$in: som.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
+            label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
           
           // deserialize the model
           var k = new Kohonen();
-          k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.labels), som.model);
+          k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.model.labelEnum), som.model);
 
           // set properties
           Template.instance().k.set(k);
@@ -190,8 +187,8 @@ Template.som.onRendered(function() {
           if (som.lvq) {
             $('#lvq').prop('checked', true)
           }
-          $('.select-dropdown').val(som.gridSize + 'x' + som.gridSize)
-          $('.chips').material_chip({data: som.labels})
+          $('#gridSize').val(som.gridSize)
+          $('.chips').material_chip({data: som.model.labelEnum})
 
           Template.instance().positions.set(k.mapping());
           Template.instance().somBuilt.set(true);

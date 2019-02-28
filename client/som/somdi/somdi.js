@@ -11,7 +11,7 @@ Template.somdi.onCreated(function () {
 			this.x.set(Spectra.findOne({projectId: FlowRouter.getParam("id")}, {x: 1}).x);
 
 			var out = [];
-			this.data.labels.forEach((label)=>{
+			this.data.k.labelEnum.forEach((label)=>{
 				out.push({
 					mode: 'lines',
 					x: this.x.get(),
@@ -25,7 +25,7 @@ Template.somdi.onCreated(function () {
 			    // width: 350,
 			    // height: 250,
 			    xaxis: {
-			        title: 'Wavenumber (cm / -1)'
+			        title: 'Raman Shift (cm' + String.fromCharCode(8315) + String.fromCharCode(185) + ')'
 			    },
 			    yaxis: {
 			        title: 'Intensity'
