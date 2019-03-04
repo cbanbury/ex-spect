@@ -1,5 +1,6 @@
 Template.newProject.onRendered(function() {
-	$('.chips').material_chip({
+	import materialize from 'materialize-css';
+	$('.chips').chips({
 		placeholder: 'Enter a label',
 		data: [{
 		  tag: 'Control',
@@ -12,11 +13,10 @@ Template.newProject.onRendered(function() {
 Template.newProject.events({
 	'submit .save-project':function(event) {
 		event.preventDefault();
-
 		var doc = {
 			name: event.target.project_name.value,
 			description: event.target.project_description.value,
-			labels: $('.chips').material_chip('data')
+			labels: M.Chips.getInstance(document.getElementById('tags')).chipsData
 		};
 
 		Meteor.call('projects:insert', doc);

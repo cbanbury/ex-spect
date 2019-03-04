@@ -31,7 +31,7 @@ Template.projectSettings.onRendered(function(){
 		if (FlowRouter.subsReady()) {
 			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
 
-			$('.chips').material_chip({
+			$('.chips').chips({
 				placeholder: 'Enter a label',
 				data: Template.instance().projectData.get().labels,
 			});
@@ -47,7 +47,7 @@ Template.projectSettings.events({
 			_id: FlowRouter.getParam("id"),
 			name: event.target.project_name.value,
 			description: event.target.project_description.value,
-			labels: $('.chips').material_chip('data')
+			labels: M.Chips.getInstance(document.getElementById('tags')).chipsData
 		};
 		Meteor.call('projects:update', doc);
 		FlowRouter.go('projects');
