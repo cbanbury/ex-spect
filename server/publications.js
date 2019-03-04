@@ -18,6 +18,10 @@ Meteor.publish("project:spectra:meta", function(projectId) {
     return Spectra.find({uid: this.userId, projectId: projectId}, {fields: {x: 0, y: 0}});
 });
 
+Meteor.publish("project:test:spectra:meta", function(projectId) {
+    return TestSpectra.find({uid: this.userId, projectId: projectId}, {fields: {x: 0, y: 0}});
+});
+
 Meteor.publish("project:spectra:selected", function(ids) {
 	console.log('got here')
 	console.log(ids)

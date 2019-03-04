@@ -21,6 +21,9 @@ Template.project.helpers({
 	spectraCount: function(tag) {
 		return Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}).count();
 	},
+	testSpectraCount: function(tag) {
+		return TestSpectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}).count();
+	},
 	pages: function(tag) {
 		return Math.round(Spectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"), label: tag}).count() / 10);
 	},
@@ -60,5 +63,6 @@ Template.project.onCreated(function() {
 
 Template.project.onRendered(function() {
 	import materialize from 'materialize-css';
+	$('ul.tabs').tabs();
 	$('.collapsible').collapsible();
 });

@@ -33,7 +33,7 @@
 				{{#each project.labels}}
 					<li>
 						<div class="collapsible-header">
-							<strong>{{tag}} ({{spectraCount tag}})</strong>
+							<strong>{{tag}} ({{spectraCount tag}} / {{testSpectraCount tag}})</strong>
 						</div>
 						<div class="collapsible-body">
 							<div class="row">
@@ -43,6 +43,8 @@
 								<div class="col s3 center-align">
 									<a class="waves-effect waves-light btn upload-data test-data">Add Test Data</a>
 								</div>
+							</div>
+							<div class="row">
 							</div>
 							<table class="responsive-table">
 								<thead>

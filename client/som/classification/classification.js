@@ -3,18 +3,38 @@ const crossValidation = require('ml-cross-validation');
 
 Template.classification.onCreated(function(){
 	this.accuracy = new ReactiveVar(null);
+	this.testAccuracy = new ReactiveVar(null);
+	this.hasPredictions = new ReactiveVar(false);
 });
 
 Template.classification.events({
 	'click .testRun': function(event) {
-		console.log('got here')
+		Template.instance().hasPredictions.set(false);
 		var model = this.k;
 		var testData = TestSpectra.find({}).fetch();
-		// console.log(testData)
-		console.log("trying to do prediction")
-		console.log(model._predict(testData.map(function(item){return item.y})));
-		console.log(model.labelEnum)
+		var predictions = model._predict(testData.map(function(item){return item.y}));
 
+		var testLabels = testData.map(function(item) {
+			var match = model.labelEnum.filter(function(label) {
+				return label.tag === item.label;
+			});
+
+			if (match[0]) {
+				return match[0].id;
+			}
+			return -1;
+		});
+
+		var accuracy = 0;
+		var total = testData.length;
+		testLabels.forEach(function(label, index) {
+			if (label === predictions[index]) {
+				accuracy++;
+			}
+		});
+
+		Template.instance().hasPredictions.set(true);
+		Template.instance().testAccuracy.set((accuracy / total) * 100);
 	},
 	'submit .cross-validation-form': function(event){
 		event.preventDefault();
@@ -56,6 +76,12 @@ Template.classification.events({
 Template.classification.helpers({
 	'accuracy': ()=>{
 		return Template.instance().accuracy.get();
+	},
+	'testAccuracy': ()=>{
+		return Template.instance().testAccuracy.get();
+	},
+	'hasPredictions': ()=>{
+		return Template.instance().hasPredictions.get();
 	},
 	'testData': ()=>{
 		return TestSpectra.find({}).count();

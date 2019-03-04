@@ -1,5 +1,5 @@
 <template name="classification">
-	<div class="row">
+<!-- 	<div class="row">
 		<h6>Cross Validation</h6>
 			<form class="cross-validation-form">
 				<div class="row">
@@ -15,11 +15,31 @@
 			</form>
 		<h6>Accuracy</h6>
 			{{accuracy}}
-	</div>
+	</div> -->
 	<div class="row">
-		<h6>Test Data</h6>
-		{{testData}}
-		<button class="btn waves-effect waves-light testRun" id="cvButton">Go!
-		</button>
+		<div class="col s12">
+			<h5>Test Data</h5>
+		</div>
+		<div class="col s6">
+			<p>Number of test samples: {{testData}}</p>
+		</div>
+		<div class="col s6">
+			<button class="btn waves-effect waves-light testRun" id="cvButton">Run
+			</button>
+		</div>
+		{{#if hasPredictions}}
+			<div class="col s12">
+				<h5>Accuracy</h5>
+			</div>
+			<div class="col s12">
+				{{testAccuracy}} %
+			</div>
+<!-- 			<div class="col s12">
+				<h5>Confusion Matrix</h5>
+			</div>
+			<div class="col s12">
+				
+			</div> -->
+		{{/if}}
 	</div>
 </template>
