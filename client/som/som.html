@@ -24,15 +24,11 @@
                                     </p>
                                 </div>
                                 <div class="col s6">
-                                    <input type="text" id="colour-{{this.id}}" value="#eee">
+                                    <input type="text" id="colour-{{this.id}}" value="{{this.color}}">
                                 </div>
                             </div>
                         {{/each}}
                     </div>
-<!--                     <div class="input-field col s12">
-                        <div class="chips" id="tags"></div>
-                        <label for="tags" class="active">Include Data</label>
-                    </div> -->
                     <div class="input-field col s6">
                         <input value=0.5 min=0 max=10 step=0.01 id="learning_rate" type="number" class="validate">
                         <label class="active" for="learning_rate">Learning Rate</label>

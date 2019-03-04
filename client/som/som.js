@@ -6,14 +6,12 @@ Template.som.events({
         event.preventDefault();
         var labels = Template.instance().labels.get();
 
-
-
-        console.log(event.target['colour-0'].value)
         var labelEnum = [];
         labels.forEach(function(label) {
           var enabled = event.target['label-' + label.tag].checked;
           if (enabled) {
-            labelEnum.push({tag: label.tag, id: label.id});
+            color = event.target['colour-' + label.id].value;
+            labelEnum.push({tag: label.tag, id: label.id, color: color});
           }
         });
 
@@ -174,14 +172,27 @@ Template.som.onRendered(function() {
         }
     }
 
+    import { scaleBand } from 'd3-scale';
+    import * as d3 from 'd3';
     this.autorun(()=>{
       if (FlowRouter.subsReady('projectSub')) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-
+        
         // define ids for labels
-        var labels = Template.instance().projectData.get().labels.map(function(item, index) {
-              return {tag: item.tag, id: index}
+        var labels = Template.instance().projectData.get().labels;
+        labels = labels.map(function(item, index) {
+          return {tag: item.tag, id: index}
         });
+
+        // set default colours
+        var classes = labels.map((item)=>{return item.id});
+        const colorScale = scaleBand().domain(classes).range([1, 0]);
+        const getColor = _.flow(colorScale, d3.scaleOrdinal(d3.schemeCategory10));
+        labels.map((item, index)=>{
+          item.color = getColor (index);
+          return item; 
+        })
+
         Template.instance().labels.set(labels);
       }
 
@@ -206,7 +217,10 @@ Template.som.onRendered(function() {
             $('#lvq').prop('checked', true)
           }
           $('#gridSize').val(som.gridSize)
-          $('.chips').chips({data: som.model.labelEnum})
+
+          // figure out how to set chips enabled
+          Template.instance().labels.set(som.model.labelEnum);
+          //$('.chips').chips({data: som.model.labelEnum})
 
           Template.instance().positions.set(k.mapping());
           Template.instance().somBuilt.set(true);

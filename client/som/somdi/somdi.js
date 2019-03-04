@@ -16,6 +16,9 @@ Template.somdi.onCreated(function () {
 					mode: 'lines',
 					x: this.x.get(),
 					y: this.data.k.SOMDI(label.id).somdi,
+					line: {
+						color: label.color
+					},
 					name: label.tag
 				});
 			});

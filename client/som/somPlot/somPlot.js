@@ -19,18 +19,25 @@ Template.somPlot.onCreated(function() {
 	  	.range([0, this.stepX]);
 
 	var classes = this.data.k.labelEnum.map((item)=>{return item.id});
-	 const scaleColor = scaleBand()
-		.domain(classes)
-		.range([1, 0]);
+	
+	// const test = scaleBand()
+	// 	.domain(classes)
+	// 	.range([1, 0]);
+
+
+	var colorValues = this.data.k.labelEnum.map(function(item) {
+		return d3.rgb(item.color)
+	});
+	
+	const scaleColor = scaleLinear().domain([0, _.max(classes)])
+	      .interpolate(d3.interpolateHcl)
+	      .range(colorValues);
 
 	this.scaleSize = scaleBand()
 	    .domain(classes)
 	    .range([10, 10]);
 
-	this.getColor = _.flow(
-		scaleColor,
-		d3.scaleOrdinal(d3.schemeCategory10),
-	);
+	this.getColor = scaleColor
 
 	this.getX = _.flow(
 	    _.get('[0]'),
