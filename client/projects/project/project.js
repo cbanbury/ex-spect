@@ -30,8 +30,11 @@ Template.project.helpers({
 });
 
 Template.project.events({
-	'click .upload-data':function(event) {
-		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag, lid: this.id});
+	'click .training-data':function(event) {
+		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag});
+	},
+	'click .test-data':function(event) {
+		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag, type: 'test'});
 	},
 	'click .select-spectrum': function(event) {
 		if (event.target.checked) {
@@ -56,5 +59,6 @@ Template.project.onCreated(function() {
 });
 
 Template.project.onRendered(function() {
+	import materialize from 'materialize-css';
 	$('.collapsible').collapsible();
 });

@@ -38,7 +38,10 @@
 						<div class="collapsible-body">
 							<div class="row">
 								<div class="col s3 center-align">
-									<a class="waves-effect waves-light btn upload-data">Add Data</a>
+									<a class="waves-effect waves-light btn upload-data training-data">Add Training Data</a>
+								</div>
+								<div class="col s3 center-align">
+									<a class="waves-effect waves-light btn upload-data test-data">Add Test Data</a>
 								</div>
 							</div>
 							<table class="responsive-table">
@@ -53,8 +56,10 @@
 									{{#each spectra tag}}
 										<tr>
 											<td>
-												<input type="checkbox" class="select-spectrum" id="{{_id}}" data-tag="{{label}}" />
-												<label for="{{_id}}"></label>
+												<label for="{{_id}}">
+													<input type="checkbox" class="select-spectrum" id="{{_id}}" data-tag="{{label}}" />
+													<span></span>
+												</label>
 											</td>
 											<td ><p style="text-overflow: ellipsis; overflow: hidden; max-width: 40vw">{{file_meta.name}}</p></td>
 											<td>{{formatDate file_meta.lastModified}}</td>

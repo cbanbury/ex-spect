@@ -6,7 +6,7 @@ Template.som.events({
         event.preventDefault();
 
         var labelEnum = [];
-        var labels = $('.chips').material_chip('data');
+        var labels = M.Chips.getInstance(document.getElementById('tags')).chipsData;
         labels.forEach(function(label, index) {
           labelEnum.push({tag: label.tag, id: index});
         });
@@ -29,7 +29,7 @@ Template.som.events({
         FlowRouter.getParam("id"),
         $('#lvq').is(':checked')
       );
-      Materialize.toast('Model saved', 2000);
+      M.toast({html: 'Model saved', displayLength: 2000});
     }
 });
 
@@ -56,7 +56,7 @@ Template.som.helpers({
     ]
   },
   labels: function() {
-    return $('.chips').material_chip('data');
+    return $('.chips').chips('data');
   },
   somBuilt: function () {
     return Template.instance().somBuilt.get();
@@ -94,6 +94,9 @@ Template.som.onCreated(function() {
 });
 
 Template.som.onRendered(function() {
+    import materialize from 'materialize-css';
+    M.Tabs.init(document.getElementById('som-tabs'));
+
     this.mapLabels = (spectra, labelEnum)=>{
       return spectra.map((spectrum)=>{
           var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
@@ -113,7 +116,7 @@ Template.som.onRendered(function() {
         var start = new Date().getTime();
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}, {limit: 968}).fetch();
+            projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
 
         // var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
         // Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
@@ -157,12 +160,10 @@ Template.som.onRendered(function() {
         }
     }
 
-    $('select').material_select();
-    $('ul.som-tabs').tabs();
     this.autorun(()=>{
       if (FlowRouter.subsReady('projectSub')) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-        $('.chips').material_chip({
+        $('.chips').chips({
           data: Template.instance().projectData.get().labels
         });
       }
@@ -188,7 +189,7 @@ Template.som.onRendered(function() {
             $('#lvq').prop('checked', true)
           }
           $('#gridSize').val(som.gridSize)
-          $('.chips').material_chip({data: som.model.labelEnum})
+          $('.chips').chips({data: som.model.labelEnum})
 
           Template.instance().positions.set(k.mapping());
           Template.instance().somBuilt.set(true);

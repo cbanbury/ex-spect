@@ -10,6 +10,16 @@ Spectra.allow({
     }
 })
 
+TestSpectra.allow({
+    'insert': function(userId, doc) {
+        if (userId === Meteor.userId()) {
+            if (doc.uid === Meteor.userId()) {
+                return true;
+            }
+        }
+    }
+})
+
 
 Projects.permit('insert').ifLoggedIn();
 Projects.permit('remove').ifLoggedIn();

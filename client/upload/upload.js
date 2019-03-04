@@ -72,14 +72,25 @@ Template.upload.events({
                         file_meta: data.fileMeta
                     }
 
-                    Spectra.insert(doc, function(err) {
-                        if (err) {
-                            console.log(err);
-                            console.log(Meteor.userId())
-                            Materialize.toast('Error uploading some data.', 4000);
-                        }
-                        resolve();
-                    });
+                    if (FlowRouter.getQueryParam('type') === 'test') {
+                        TestSpectra.insert(doc, function(err) {
+                            if (err) {
+                                console.log(err);
+                                console.log(Meteor.userId())
+                                Materialize.toast('Error uploading some data.', 4000);
+                            }
+                            resolve();
+                        });
+                    } else {
+                        Spectra.insert(doc, function(err) {
+                            if (err) {
+                                console.log(err);
+                                console.log(Meteor.userId())
+                                Materialize.toast('Error uploading some data.', 4000);
+                            }
+                            resolve();
+                        });
+                    }
                 });
             }).then(loop.bind(null, i+1));
            

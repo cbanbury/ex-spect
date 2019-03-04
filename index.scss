@@ -1,6 +1,6 @@
-@import "{materialize:materialize}/sass/components/_color.scss";
+@import "imports/materialize-css/sass/components/_color-variables";
 @import "sass/pallette.scss";
-@import "{materialize:materialize}/sass/materialize.scss";
+@import "imports/materialize-css/sass/materialize.scss";
 
 html {
 	font-family: "Roboto", sans serif;

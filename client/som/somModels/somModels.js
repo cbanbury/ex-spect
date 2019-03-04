@@ -1,6 +1,6 @@
 Template.somModels.events({
 	'click .new-model':function() {
-		FlowRouter.go('learn', {id: FlowRouter.getParam("id")});
+		window.location = FlowRouter.path('learn', {id: FlowRouter.getParam("id")});
 	},
 	'click .load-model':function(event) {
 		FlowRouter.go('learn', {id: FlowRouter.getParam("id")}, {m: event.target.id});

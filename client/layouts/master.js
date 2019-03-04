@@ -1,3 +1,3 @@
-Template.master_layout.rendered = function() {
-	$(".button-collapse").sideNav();
-}
+Template.master_layout.onRendered(function() {
+	import materialize from 'materialize-css';
+});

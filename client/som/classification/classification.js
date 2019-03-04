@@ -6,6 +6,16 @@ Template.classification.onCreated(function(){
 });
 
 Template.classification.events({
+	'click .testRun': function(event) {
+		console.log('got here')
+		var model = this.k;
+		var testData = TestSpectra.find({}).fetch();
+		// console.log(testData)
+		console.log("trying to do prediction")
+		console.log(model._predict(testData.map(function(item){return item.y})));
+		console.log(model.labelEnum)
+
+	},
 	'submit .cross-validation-form': function(event){
 		event.preventDefault();
 		$('#cvButton').attr('disabled', true);
@@ -46,5 +56,8 @@ Template.classification.events({
 Template.classification.helpers({
 	'accuracy': ()=>{
 		return Template.instance().accuracy.get();
+	},
+	'testData': ()=>{
+		return TestSpectra.find({}).count();
 	}
 })
