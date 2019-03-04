@@ -4,11 +4,17 @@ import _ from 'lodash/fp';
 Template.som.events({
     'submit .compute-som': function(event, instance) {
         event.preventDefault();
+        var labels = Template.instance().labels.get();
 
+
+
+        console.log(event.target['colour-0'].value)
         var labelEnum = [];
-        var labels = M.Chips.getInstance(document.getElementById('tags')).chipsData;
-        labels.forEach(function(label, index) {
-          labelEnum.push({tag: label.tag, id: index});
+        labels.forEach(function(label) {
+          var enabled = event.target['label-' + label.tag].checked;
+          if (enabled) {
+            labelEnum.push({tag: label.tag, id: label.id});
+          }
         });
 
         var props = {
@@ -56,7 +62,7 @@ Template.som.helpers({
     ]
   },
   labels: function() {
-    return $('.chips').chips('data');
+    return Template.instance().labels.get();
   },
   somBuilt: function () {
     return Template.instance().somBuilt.get();
@@ -91,6 +97,7 @@ Template.som.onCreated(function() {
   this.somBuilt = new ReactiveVar(false);
   this.k = new ReactiveVar();
   this.positions = new ReactiveVar();
+  this.labels = new ReactiveVar();
 });
 
 Template.som.onRendered(function() {
@@ -117,6 +124,13 @@ Template.som.onRendered(function() {
 
         var spectra = Spectra.find({uid: Meteor.userId(), 
             projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
+
+        if (spectra.length < 1) {
+          M.toast({html: 'No data found, please try again.', displayLength: 2000})
+          $('#runButton').text('run');
+          $('#runButton').attr('disabled', null)
+          return null;
+        }
 
         // var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
         // Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
@@ -163,9 +177,12 @@ Template.som.onRendered(function() {
     this.autorun(()=>{
       if (FlowRouter.subsReady('projectSub')) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-        $('.chips').chips({
-          data: Template.instance().projectData.get().labels
+
+        // define ids for labels
+        var labels = Template.instance().projectData.get().labels.map(function(item, index) {
+              return {tag: item.tag, id: index}
         });
+        Template.instance().labels.set(labels);
       }
 
       if (FlowRouter.subsReady()) {
