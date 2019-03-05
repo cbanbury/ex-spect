@@ -13,8 +13,8 @@
                     </div>
                     <div class="col s12 collection">
                         {{#each labels}}
-                            <div class="row">
-                                <div class="col s6">
+                            <div class="col s12 input-field">
+                                <div class="col s10">
                                     <p>
                                       <label>
                                         <input type="checkbox" checked="checked" id="label-{{this.tag}}"/>
@@ -23,8 +23,10 @@
                                       </label>
                                     </p>
                                 </div>
-                                <div class="col s6">
-                                    <input type="text" id="colour-{{this.id}}" value="{{this.color}}">
+                                <div class="col s1" style="">
+
+                                    <a href="" class="btn-floating btn-small waves-effect"><input style="font-size: 0px" class="jscolor {hash:true}" id="color-{{this.id}}" value="{{this.color}}"></a>
+                                    <label>Color</label>
                                 </div>
                             </div>
                         {{/each}}

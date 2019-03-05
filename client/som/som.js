@@ -10,7 +10,7 @@ Template.som.events({
         labels.forEach(function(label) {
           var enabled = event.target['label-' + label.tag].checked;
           if (enabled) {
-            color = event.target['colour-' + label.id].value;
+            color = event.target['color-' + label.id].value;
             labelEnum.push({tag: label.tag, id: label.id, color: color});
           }
         });
@@ -100,6 +100,7 @@ Template.som.onCreated(function() {
 
 Template.som.onRendered(function() {
     import materialize from 'materialize-css';
+
     M.Tabs.init(document.getElementById('som-tabs'));
 
     this.mapLabels = (spectra, labelEnum)=>{
@@ -175,6 +176,7 @@ Template.som.onRendered(function() {
     import { scaleBand } from 'd3-scale';
     import * as d3 from 'd3';
     this.autorun(()=>{
+      jscolor.installByClassName("jscolor");
       if (FlowRouter.subsReady('projectSub')) {
         Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
         
@@ -219,8 +221,12 @@ Template.som.onRendered(function() {
           $('#gridSize').val(som.gridSize)
 
           // figure out how to set chips enabled
+          
+          // TODO: loop over each and set background color!
           Template.instance().labels.set(som.model.labelEnum);
-          //$('.chips').chips({data: som.model.labelEnum})
+          som.model.labelEnum.forEach((item)=>{
+            document.getElementById('color-' + item.id).style.background = item.color;
+          });
 
           Template.instance().positions.set(k.mapping());
           Template.instance().somBuilt.set(true);
