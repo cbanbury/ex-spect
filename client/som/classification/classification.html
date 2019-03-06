@@ -16,30 +16,65 @@
 		<h6>Accuracy</h6>
 			{{accuracy}}
 	</div> -->
-	<div class="row">
-		<div class="col s12">
-			<h5>Test Data</h5>
-		</div>
-		<div class="col s6">
-			<p>Number of test samples: {{testData}}</p>
-		</div>
-		<div class="col s6">
-			<button class="btn waves-effect waves-light testRun" id="cvButton">Run
-			</button>
-		</div>
-		{{#if hasPredictions}}
-			<div class="col s12">
-				<h5>Accuracy</h5>
+	<div class="container">
+		<div class="col s12 collection">
+			<div class="row">
+				<div class="col s12">
+					<table>
+						<tr>
+							<th>
+								# Test Samples
+							</th>
+							<th>
+								Accuracy (%)
+							</th>
+						</tr>
+						<tr>
+							<td>{{testData}}</td>
+							<td>
+								{{#if hasPredictions}}
+									{{testAccuracy}}
+								{{/if}}
+							</td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div class="col s12">
-				{{testAccuracy}} %
+			{{#if hasPredictions}}
+				<div class="row">
+					<div class="col s12">
+						<h5>Confusion Matrix</h5>
+					</div>
+					<div class="col s12 card-panel">
+						<table>
+						    <thead>
+						    	<tr>
+						    		<th></th>
+						    		{{#each k.labelEnum}}
+						          		<th>{{tag}}</th>			      
+						      		{{/each}}
+						    	</tr>
+						    </thead>
+						    <tbody>
+							    {{#each k.labelEnum}}
+							    	<tr>
+							    		<th>{{tag}}</th>
+							  			{{#each confusionRow id}}
+							    			<td>{{this}}</td>
+							    		{{/each}}
+							    	</tr>
+							    {{/each}}
+						    </tbody>
+						  </table>
+					</div>
+				</div>
+			{{/if}}
+			<div class="row">
+				<div class="col s6">
+					<button class="btn waves-effect waves-light testRun" id="cvButton">Test
+					</button>
+				</div>
 			</div>
-<!-- 			<div class="col s12">
-				<h5>Confusion Matrix</h5>
-			</div>
-			<div class="col s12">
-				
-			</div> -->
-		{{/if}}
+		</div>
 	</div>
 </template>

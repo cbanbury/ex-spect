@@ -23,6 +23,7 @@
     "materialize-css": "^1.0.0",
     "meteor-node-stubs": "^0.2.3",
     "ml-cross-validation": "^1.2.0",
+    "ml-matrix": "^5.2.1",
     "ml-pca": "^1.1.2",
     "workerpool": "^2.3.3"
   },

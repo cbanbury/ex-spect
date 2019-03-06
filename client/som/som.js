@@ -87,6 +87,9 @@ Template.som.helpers({
   },
   positions: function() {
     return Template.instance().positions.get();
+  },
+  showSpectra: function() {
+    return $("input[name='show-spectra']:checked").val();
   }
 })
 
@@ -146,7 +149,7 @@ Template.som.onRendered(function() {
           minLearningCoef: 0.001,
           maxNeighborhood: props.neighbourhood,
           minNeighborhood: 0.1,
-          distance: 'manhattan',
+          // distance: 'manhattan',
           norm: true
         });
 

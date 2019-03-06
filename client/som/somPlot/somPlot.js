@@ -19,11 +19,6 @@ Template.somPlot.onCreated(function() {
 	  	.range([0, this.stepX]);
 
 	var classes = this.data.k.labelEnum.map((item)=>{return item.id});
-	
-	// const test = scaleBand()
-	// 	.domain(classes)
-	// 	.range([1, 0]);
-
 
 	var colorValues = this.data.k.labelEnum.map(function(item) {
 		return d3.rgb(item.color)
@@ -50,6 +45,25 @@ Template.somPlot.onCreated(function() {
 	    _.map(Template.instance().scaleGrid),
 	    _.get('[1]')
 	);
+
+	// find circle size based on number of spectra in neuron
+	var positions = Template.instance().data.positions;
+	positions = positions.map((item)=>{return item[0].toString();});
+
+	var count = {};
+	var max = 0;
+	positions.forEach((item)=>{
+		if (!count[item]) {
+			count[item] = 1
+		} else {
+			count[item] += 1
+		}
+		if (count[item] > max) {
+			max = count[item];
+		}
+	});
+
+	this.scaleFactor = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6) / 10;
 });
 
 Template.somPlot.onRendered(function() {
@@ -73,6 +87,12 @@ Template.somPlot.helpers({
 
 		return pathGenfunction(neuron);
 	},
+	showSpectra: function() {
+		if (+Template.instance().data.showSpectra === 1) {
+			return true;
+		}
+		return false;
+	},
 	neurons: function() {
 		const haxagonsByLine = Math.sqrt(Template.instance().data.k.neurons.length);
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
@@ -93,14 +113,16 @@ Template.somPlot.helpers({
 	simulate: function() {
 		// do force simulation to prevent circles from overlapping in neurons
 		var nodes = Template.instance().data.positions;
+		const radius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
 
 		if (nodes && nodes.length > 0) {
 			var simulation = d3.forceSimulation(nodes)
 			  .force("x", d3.forceX(Template.instance().getX))
 			  .force("y", d3.forceY(Template.instance().getY))
-			  .force('collision', d3.forceCollide().radius(function(d) {
-			    return 0.3;
-			  }))
+			  .force("charge", d3.forceManyBody().strength(-0.04).distanceMax(radius-2))
+			  // .force('collision', d3.forceCollide().distanceMax(radius).radius(function(d) {
+			  //   return radius / Template.instance().scaleFactor;
+			  // }))
 			  .on('tick', ticked);
 
 			function ticked() {
@@ -123,6 +145,9 @@ Template.somPlot.helpers({
 			Materialize.toast('Something went wrong. No data available for SOM', 4000, 'red')
 		}
 	},
+	circleSize: function() {
+		return Template.instance().scaleFactor ; //(Template.instance().stepX / 2) / Math.cos(Math.PI / 6) / Template.instance().scaleFactor;
+	},
 	circles: function() {
 		// paint a circle for each spectrum into the map
 		const getFill = _.flow(
@@ -142,7 +167,7 @@ Template.somPlot.helpers({
 				return {
 					x: Template.instance().getX(item),
 					y: Template.instance().getY(item),
-					color: getFill(item)
+					color: getFill(item),
 				}
 			});
 		}

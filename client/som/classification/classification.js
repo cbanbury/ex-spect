@@ -1,10 +1,13 @@
 import Kohonen, {hexagonHelper} from 'kohonen';
 const crossValidation = require('ml-cross-validation');
+import Matrix from 'ml-matrix';
+import _ from 'lodash';
 
 Template.classification.onCreated(function(){
 	this.accuracy = new ReactiveVar(null);
 	this.testAccuracy = new ReactiveVar(null);
 	this.hasPredictions = new ReactiveVar(false);
+	this.confusionMatrix = new ReactiveVar(false);
 });
 
 Template.classification.events({
@@ -27,12 +30,22 @@ Template.classification.events({
 
 		var accuracy = 0;
 		var total = testData.length;
-		testLabels.forEach(function(label, index) {
-			if (label === predictions[index]) {
+
+		var maxLabel = _.maxBy(model.labelEnum, (item)=>{return item.id});
+		maxLabel = maxLabel.id +1;
+		var confusionMatrix = Matrix.zeros(maxLabel, maxLabel);
+
+		testLabels.forEach(function(actual, index) {
+			var prediction = predictions[index];
+			if (actual === prediction) {
 				accuracy++;
 			}
+
+			confusionMatrix.set(actual, prediction, confusionMatrix.get(actual, prediction) + 1);
 		});
 
+		
+		Template.instance().confusionMatrix.set(confusionMatrix.to2DArray());
 		Template.instance().hasPredictions.set(true);
 		Template.instance().testAccuracy.set((accuracy / total) * 100);
 	},
@@ -85,5 +98,21 @@ Template.classification.helpers({
 	},
 	'testData': ()=>{
 		return TestSpectra.find({}).count();
+	},
+	'getTag': (id)=>{
+		var match = Template.instance().data.k.labelEnum.filter((item)=>{
+			return item.id === id;
+		});
+
+		console.log(match);
+
+		if (match[0]) {
+			return match[0].tag;
+		}
+	},
+	'confusionRow': (index)=>{
+		console.log('getting here ' + index)
+		// console.log(Template.instance().confusionMatrix.get());
+		return Template.instance().confusionMatrix.get()[index];
 	}
 })
