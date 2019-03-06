@@ -99,20 +99,7 @@ Template.classification.helpers({
 	'testData': ()=>{
 		return TestSpectra.find({}).count();
 	},
-	'getTag': (id)=>{
-		var match = Template.instance().data.k.labelEnum.filter((item)=>{
-			return item.id === id;
-		});
-
-		console.log(match);
-
-		if (match[0]) {
-			return match[0].tag;
-		}
-	},
 	'confusionRow': (index)=>{
-		console.log('getting here ' + index)
-		// console.log(Template.instance().confusionMatrix.get());
 		return Template.instance().confusionMatrix.get()[index];
 	}
 })
