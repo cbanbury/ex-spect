@@ -1,3 +1,4 @@
+import _ from 'lodash';
 
 Template.upload.onCreated(function() {
     this.saveText = new ReactiveVar('save');
@@ -62,6 +63,12 @@ Template.upload.events({
                 }
 
                 getFileData(files[i]).then(function(data) {
+                    if (data.x && data.y && data.x[0] > data.x[1]) {
+                        // reverse spectra
+                        data.x = _.reverse(data.x);
+                        data.y = _.reverse(data.y);
+                    }
+
                     var doc = {
                         label: FlowRouter.getQueryParam('label'),
                         uid: Meteor.userId(),

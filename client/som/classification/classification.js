@@ -44,7 +44,6 @@ Template.classification.events({
 			confusionMatrix.set(actual, prediction, confusionMatrix.get(actual, prediction) + 1);
 		});
 
-		
 		Template.instance().confusionMatrix.set(confusionMatrix.to2DArray());
 		Template.instance().hasPredictions.set(true);
 		Template.instance().testAccuracy.set((accuracy / total) * 100);
@@ -56,8 +55,10 @@ Template.classification.events({
 		var folds = event.target.folds.value;
 
 		$('#cvButton').text('processing');
+		console.log('before')
 		const confusionMatrix = crossValidation.kFold(model._data.v, model._data.labels, folds, function(trainFeatures, trainLabels, testFeatures) {
-		  var neurons = hexagonHelper.generateGrid(model.numNeurons, model.numNeurons);
+		 var neurons = hexagonHelper.generateGrid(model.numNeurons, model.numNeurons);
+		  	console.log('inside fold');
 		  const k = new Kohonen({
 		    data: trainFeatures,
 		    labels: trainLabels,
@@ -72,9 +73,10 @@ Template.classification.events({
 		  });
 
 		  	for (var i=0; i<model.maxStep; i++) {
-			    window.setTimeout(function(){
+			    // window.setTimeout(function(){
+			    	console.log('doing step');
 			      var step = k.learnStep();
-			    }, 0);
+			    // }, 0);
 			}
 
 			return k._predict(testFeatures);

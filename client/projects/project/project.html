@@ -19,15 +19,37 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col s4 center-align">
+				<div class="col s3 center-align">
 					<a class="waves-effect waves-light btn disabled">Select All</a>
 				</div>
-				<div class="col s4 center-align">
-					<a class="waves-effect waves-light btn view-data">View</a>
+				<div class="col s3 center-align">
+					<a class="waves-effect waves-light btn modal-trigger" href="#truncate_modal">Truncate Data</a>
 				</div>
-				<div class="col s4 center-align">
-					<a class="waves-effect waves-light btn disabled">Delete</a>
-				</div>
+				<form class="truncate-form">
+					<div id="truncate_modal" class="modal">
+						<div class="modal-content" style="max-height: 25vh; height: 25vh">
+					    	<h5>Range</h5>
+					    	<div class="input-field col s6">
+					    	    <input min={{range.min}} max={{range.max}} id="range_from" type="number" required class="validate">
+					    	    <label class="active" for="range_from">From</label>
+					    	</div>
+					    	<div class="input-field col s6">
+					    	    <input min={{range.min}} max={{range.max}} id="range_to" type="number" required class="validate">
+					    	    <label class="active" for="range_to">To</label>
+					    	</div>
+					  	</div>
+					  	<div class="modal-footer">
+					  		<a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+					    	<button href="#!" class="modal-close waves-effect waves-green btn-flat" type="submit">Truncate</button>
+						</div>
+					</div>
+					<div class="col s3 center-align">
+						<a class="waves-effect waves-light btn view-data">View</a>
+					</div>
+					<div class="col s3 center-align">
+						<a class="waves-effect waves-light btn disabled">Delete</a>
+					</div>
+				</form>
 			</div>
 			<ul class="collapsible" data-collapsible="accordion">
 				{{#each project.labels}}

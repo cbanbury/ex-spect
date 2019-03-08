@@ -1,3 +1,5 @@
+import '../../lib/cross-validation';
+
 Template.project.helpers({
 	'project': function() {
 		return Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
@@ -29,6 +31,9 @@ Template.project.helpers({
 	},
 	formatDate: function(date) {
 		return moment(date).format('DD-MM-YYYY');
+	},
+	range: function() {
+		return Template.instance().range.get();
 	}
 });
 
@@ -54,15 +59,37 @@ Template.project.events({
 	},
 	'click .machine-learning': function(event) {
 		FlowRouter.go('models', {id: FlowRouter.getParam("id")});
+	},
+	'submit .truncate-form': function(event) {
+		event.preventDefault();
+		var from = event.target.range_from.value;
+		var to = event.target.range_to.value;
+		var projectId = FlowRouter.getParam("id");
+		Meteor.call('spectra:truncate', from, to, projectId, function(err) {
+			if (!err) {
+				M.toast({html: 'Data truncated', displayLength: 2000});
+			} else {
+				M.toast({html: 'Error truncating data', displayLength: 2000});
+			}
+		});
 	}
 });
 
 Template.project.onCreated(function() {
 	SelectedSpectra.remove();
+
+	this.range = new ReactiveVar({min: -1, max: -1});
+	Meteor.call('spectra:xrange', FlowRouter.getParam("id"), (err, range)=> {
+		this.range.set(range);
+	});
+	
 });
 
 Template.project.onRendered(function() {
+	console.log('cross validation dummy')
+	window.cv.folds([], 10);
 	import materialize from 'materialize-css';
 	$('ul.tabs').tabs();
 	$('.collapsible').collapsible();
+	$('.modal').modal();
 });
