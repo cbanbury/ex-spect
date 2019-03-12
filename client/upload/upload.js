@@ -84,7 +84,7 @@ Template.upload.events({
                             if (err) {
                                 console.log(err);
                                 console.log(Meteor.userId())
-                                Materialize.toast('Error uploading some data.', 4000);
+                                M.toast({html:'Error uploading some data.', displayLength:4000});
                             }
                             resolve();
                         });
@@ -93,7 +93,7 @@ Template.upload.events({
                             if (err) {
                                 console.log(err);
                                 console.log(Meteor.userId())
-                                Materialize.toast('Error uploading some data.', 4000);
+                                M.toast({html: 'Error uploading some data.', displayLength:4000});
                             }
                             resolve();
                         });
