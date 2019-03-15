@@ -23,16 +23,18 @@ Template.somPlot.onCreated(function() {
 	var colorValues = this.data.k.labelEnum.map(function(item) {
 		return d3.rgb(item.color)
 	});
-	
-	const scaleColor = scaleLinear().domain([0, _.max(classes)])
-	      .interpolate(d3.interpolateHcl)
-	      .range(colorValues);
 
 	this.scaleSize = scaleBand()
 	    .domain(classes)
 	    .range([10, 10]);
 
-	this.getColor = scaleColor
+	this.getColor = (id)=>{
+		var match = this.data.k.labelEnum.filter((item)=>{
+			return item.id === id;
+		});
+
+		return d3.rgb(match[0].color);
+	}
 
 	this.getX = _.flow(
 	    _.get('[0]'),
