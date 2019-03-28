@@ -55,24 +55,24 @@ Meteor.methods({
         console.log('Finished learning');
 
         console.log('Saving model');
+        var mapping = k.mapping();
         var model = k.export();
         delete model._data;
         SOM.insert({
             completed_at: new Date(),
             uid: Meteor.userId(),
             model: model,
+            positions: mapping,
             projectId: projectId,
             gridSize: Math.sqrt(model.numNeurons),
             lvq: props.lvq
         });
+        console.log('Saved model');
     },
-    'SOM:getMapping': function(somId, projectId) {
-      var som = SOM.findOne({_id: somId});
-
-      var spectra = Spectra.find({projectId: projectId, 
-                  label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
-      var k = new Kohonen();
-      k.import(_.map(_.get('y'), spectra), mapLabels(spectra, som.model.labelEnum), som.model);
-      return {mapping: k.mapping(), som: som};
+    'SOM:getModel': function(somId, projectId) {
+      return SOM.findOne({_id: somId});
+    },
+    'SOM:getX': function(projectId) {
+      return Spectra.findOne({projectId: projectId}, {x: 1}).x
     }
 })

@@ -156,19 +156,16 @@ Template.som.onRendered(function() {
 
       if (FlowRouter.subsReady()) {
         Session.set('data-loaded', true);
-
         if (FlowRouter.getQueryParam('m')) {
           var instance = Template.instance();
-          Meteor.call('SOM:getMapping', FlowRouter.getQueryParam('m'), FlowRouter.getParam("id"), function (err, res) {
-            instance.positions.set(res.mapping);
+          Meteor.call('SOM:getModel', FlowRouter.getQueryParam('m'), FlowRouter.getParam("id"), function (err, som) {
+            instance.positions.set(som.positions);
             var temp = new Kohonen();
-            var som = res.som;
 
             temp.import([], [], som.model)
             instance.k.set(temp);
             instance.somBuilt.set(true);
 
-            
             // set properties
             $('#learning_rate').val(som.model.maxLearningCoef)
             $('#steps').val(som.model.maxStep)
