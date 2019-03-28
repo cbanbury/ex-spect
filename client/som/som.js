@@ -122,58 +122,11 @@ Template.som.onRendered(function() {
 
         var projectId = FlowRouter.getParam("id");
 
-        var start = new Date().getTime();
-
-        var spectra = Spectra.find({uid: Meteor.userId(), 
-            projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
-
-        if (spectra.length < 1) {
-          M.toast({html: 'No data found, please try again.', displayLength: 2000})
-          $('#runButton').text('run');
-          $('#runButton').attr('disabled', null)
-          return null;
-        }
-
-        // var suggestedGridSize = Math.sqrt(5*Math.sqrt(spectra.length));
-        // Materialize.toast('Suggested grid size: ' + Math.round(suggestedGridSize), 2000);
-
-        // setup the self organising map
-        var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
-        const k = new Kohonen({
-          data: _.map(_.get('y'), spectra),
-          labels: this.mapLabels(spectra, props.labels),
-          labelEnum: props.labels,
-          neurons, 
-          maxStep: props.steps,
-          maxLearningCoef: props.learningRate,
-          minLearningCoef: 0.001,
-          maxNeighborhood: props.neighbourhood,
-          minNeighborhood: 0.1,
-          // distance: 'manhattan',
-          norm: true
-        });
-
         var instance = Template.instance();
-        instance.k.set(k);
 
-        for (var i=0; i<props.steps; i++) {
-          window.setTimeout(function(){
-            var step = k.learnStep();
-
-            $('#runButton').text(Math.floor((step / props.steps)*100) + '%');
-            if (step === props.steps) {
-              if (props.lvq) {
-                // Materialize.toast('Running LVQ', 2000)
-                k.LVQ();
-              }
-              $('#runButton').text('run');
-              $('#runButton').attr('disabled', null)
-              instance.somBuilt.set(true);
-              instance.k.set(k);
-              instance.positions.set(k.mapping());
-            }
-          }, 0);
-        }
+        Meteor.call('SOM:compute', projectId, props);
+        M.toast({html: 'Model building', displayLength: 2000});
+        FlowRouter.go('models', {id: FlowRouter.getParam("id")});
     }
 
     import { scaleBand } from 'd3-scale';
@@ -205,34 +158,31 @@ Template.som.onRendered(function() {
         Session.set('data-loaded', true);
 
         if (FlowRouter.getQueryParam('m')) {
-          var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
-          var spectra = Spectra.find({projectId: FlowRouter.getParam("id"), 
-            label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}}, {y: 1, label: 1}).fetch();
-          
-          // deserialize the model
-          var k = new Kohonen();
-          k.import(_.map(_.get('y'), spectra), this.mapLabels(spectra, som.model.labelEnum), som.model);
+          var instance = Template.instance();
+          Meteor.call('SOM:getMapping', FlowRouter.getQueryParam('m'), FlowRouter.getParam("id"), function (err, res) {
+            instance.positions.set(res.mapping);
+            var temp = new Kohonen();
+            var som = res.som;
 
-          // set properties
-          Template.instance().k.set(k);
-          $('#learning_rate').val(som.model.maxLearningCoef)
-          $('#steps').val(som.model.maxStep)
-          $('#neighbourhood').val(som.model.maxNeighborhood)
-          if (som.lvq) {
-            $('#lvq').prop('checked', true)
-          }
-          $('#gridSize').val(som.gridSize)
+            temp.import([], [], som.model)
+            instance.k.set(temp);
+            instance.somBuilt.set(true);
 
-          // figure out how to set chips enabled
-          
-          // TODO: loop over each and set background color!
-          Template.instance().labels.set(som.model.labelEnum);
-          som.model.labelEnum.forEach((item)=>{
-            document.getElementById('color-' + item.id).style.background = item.color;
+            
+            // set properties
+            $('#learning_rate').val(som.model.maxLearningCoef)
+            $('#steps').val(som.model.maxStep)
+            $('#neighbourhood').val(som.model.maxNeighborhood)
+            if (som.lvq) {
+              $('#lvq').prop('checked', true)
+            }
+            $('#gridSize').val(som.gridSize)
+
+            instance.labels.set(som.model.labelEnum);
+            som.model.labelEnum.forEach((item)=>{
+              document.getElementById('color-' + item.id).style.background = item.color;
+            });
           });
-
-          Template.instance().positions.set(k.mapping());
-          Template.instance().somBuilt.set(true);
         }
       }
     });
