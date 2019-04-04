@@ -5,7 +5,7 @@ function mapLabels(spectra, labelEnum) {
   return spectra.map((spectrum)=>{
   var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
   if (match && match.length === 1) {
-    return match[0].id;  
+    return match[0].id;
   }
   });
 }
@@ -28,15 +28,21 @@ Meteor.methods({
     },
     'SOM:compute': function(projectId, props) {
         console.log('New call to build SOM');
-        var spectra = Spectra.find({uid: Meteor.userId(), 
+        // define ids for labels
+        var labels = props.labels;
+        labels = labels.map(function(item, index) {
+          return {tag: item.tag, id: index}
+        });
+
+        var spectra = Spectra.find({uid: Meteor.userId(),
             projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
 
         var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
         const k = new Kohonen({
           data: _.map(_.get('y'), spectra),
-          labels: mapLabels(spectra, props.labels),
-          labelEnum: props.labels,
-          neurons, 
+          labels: mapLabels(spectra, labels),
+          labelEnum: labels,
+          neurons,
           maxStep: props.steps,
           maxLearningCoef: props.learningRate,
           minLearningCoef: 0.001,
@@ -70,7 +76,18 @@ Meteor.methods({
         console.log('Saved model');
     },
     'SOM:getModel': function(somId, projectId) {
-      return SOM.findOne({_id: somId});
+      var project = Projects.findOne({_id: projectId});
+      var som = SOM.findOne({_id: somId});
+      som.model.labelEnum.map((item)=>{
+          var match = project.labels.filter((label)=>{
+            return label.tag === item.tag;
+          })
+
+          if (match && match[0]) {
+            item.color = match[0].color;
+          }
+      })
+      return som;
     },
     'SOM:getX': function(projectId) {
       return Spectra.findOne({projectId: projectId}, {x: 1}).x

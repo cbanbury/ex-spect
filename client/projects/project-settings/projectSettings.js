@@ -1,3 +1,5 @@
+Labels = new Mongo.Collection(null);
+
 Template.projectSettings.helpers({
 	'crumbs': function() {
 		var project = Template.instance().projectData.get();
@@ -18,6 +20,9 @@ Template.projectSettings.helpers({
 	},
 	'projectData': function() {
 		return Template.instance().projectData.get();
+	},
+	'labels': ()=>{
+		return Labels.find();
 	}
 });
 
@@ -25,21 +30,35 @@ Template.projectSettings.onCreated(function() {
 	this.projectData = new ReactiveVar({name: ''});
 });
 
-
 Template.projectSettings.onRendered(function(){
 	this.autorun(()=>{
 		if (FlowRouter.subsReady()) {
 			Template.instance().projectData.set(Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()}));
-
-			$('.chips').chips({
-				placeholder: 'Enter a label',
-				data: Template.instance().projectData.get().labels,
-			});
+			Template.instance().projectData.get().labels.forEach(function(label) {
+				delete label._id;
+				Labels.insert(label);
+			})
+			jscolor.installByClassName("jscolor");
 		}
 	})
 });
 
 Template.projectSettings.events({
+	'change .tag-input': function(event) {
+		var id = event.target.id.split('-')[0];
+		Labels.update({_id: id}, {$set: {tag: event.target.value}});
+	},
+	'change .color-input': function(event) {
+		var id = event.target.id.split('-')[0];
+		Labels.update({_id: id}, {$set: {color: event.target.value}});
+	},
+	'click .add-label': function(event) {
+		Labels.insert({tag: 'New', color: '#212121'})
+		jscolor.installByClassName("jscolor");
+	},
+	'click .remove-label': function(event) {
+		Labels.remove({_id: event.target.id})
+	},
 	'submit .save-project':function(event) {
 		event.preventDefault();
 
@@ -47,7 +66,7 @@ Template.projectSettings.events({
 			_id: FlowRouter.getParam("id"),
 			name: event.target.project_name.value,
 			description: event.target.project_description.value,
-			labels: M.Chips.getInstance(document.getElementById('tags')).chipsData
+			labels: Labels.find().fetch()
 		};
 		Meteor.call('projects:update', doc);
 		FlowRouter.go('projects');

@@ -19,7 +19,6 @@ Template.somPlot.onCreated(function() {
 	  	.range([0, this.stepX]);
 
 	var classes = this.data.k.labelEnum.map((item)=>{return item.id});
-
 	var colorValues = this.data.k.labelEnum.map(function(item) {
 		return d3.rgb(item.color)
 	});
@@ -67,7 +66,7 @@ Template.somPlot.onCreated(function() {
 
 	const hexagonRadius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
 
-	this.scaleFactor = Math.sqrt(0.6 * Math.pow(hexagonRadius, 2) / max);
+	this.scaleFactor = Math.sqrt(0.4 * Math.pow(hexagonRadius, 2) / max);
 });
 
 Template.somPlot.onRendered(function() {
@@ -118,7 +117,6 @@ Template.somPlot.helpers({
 		// do force simulation to prevent circles from overlapping in neurons
 		var nodes = Template.instance().data.positions;
 		const radius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
-		console.log(radius);
 		if (nodes && nodes.length > 0) {
 			var simulation = d3.forceSimulation(nodes)
 			  .force("x", d3.forceX(Template.instance().getX))

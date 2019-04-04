@@ -1,5 +1,3 @@
-import '../../lib/cross-validation';
-
 Template.project.helpers({
 	'project': function() {
 		return Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
