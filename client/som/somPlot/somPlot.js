@@ -10,7 +10,7 @@ import _ from 'lodash/fp';
 
 Template.somPlot.onCreated(function() {
 	this.model = new ReactiveVar();
-	
+
 	// setup functions for animation
 	this.stepX = 9
 
@@ -26,7 +26,7 @@ Template.somPlot.onCreated(function() {
 
 	this.scaleSize = scaleBand()
 	    .domain(classes)
-	    .range([10, 10]);
+	    .range([1, 1]);
 
 	this.getColor = (id)=>{
 		var match = this.data.k.labelEnum.filter((item)=>{
@@ -65,7 +65,9 @@ Template.somPlot.onCreated(function() {
 		}
 	});
 
-	this.scaleFactor = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6) / 10;
+	const hexagonRadius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
+
+	this.scaleFactor = Math.sqrt(0.6 * Math.pow(hexagonRadius, 2) / max);
 });
 
 Template.somPlot.onRendered(function() {
@@ -116,15 +118,15 @@ Template.somPlot.helpers({
 		// do force simulation to prevent circles from overlapping in neurons
 		var nodes = Template.instance().data.positions;
 		const radius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
-
+		console.log(radius);
 		if (nodes && nodes.length > 0) {
 			var simulation = d3.forceSimulation(nodes)
 			  .force("x", d3.forceX(Template.instance().getX))
 			  .force("y", d3.forceY(Template.instance().getY))
-			  .force("charge", d3.forceManyBody().strength(-0.04).distanceMax(radius-2))
-			  // .force('collision', d3.forceCollide().distanceMax(radius).radius(function(d) {
-			  //   return radius / Template.instance().scaleFactor;
-			  // }))
+			  // .force("charge", d3.forceManyBody().strength(-0.04).distanceMax(radius-2))
+			  .force('collision', d3.forceCollide().radius(function(d) {
+			    return Template.instance().scaleFactor;
+			  }))
 			  .on('tick', ticked);
 
 			function ticked() {
@@ -148,7 +150,7 @@ Template.somPlot.helpers({
 		}
 	},
 	circleSize: function() {
-		return Template.instance().scaleFactor ; //(Template.instance().stepX / 2) / Math.cos(Math.PI / 6) / Template.instance().scaleFactor;
+		return Template.instance().scaleFactor; //(Template.instance().stepX / 2) / Math.cos(Math.PI / 6) / Template.instance().scaleFactor;
 	},
 	circles: function() {
 		// paint a circle for each spectrum into the map
