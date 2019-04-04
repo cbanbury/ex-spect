@@ -38,6 +38,12 @@ Template.project.helpers({
 });
 
 Template.project.events({
+	'click .pluck-data': function(event) {
+		event.preventDefault();
+		Meteor.call('spectra:pluck:test', FlowRouter.getParam("id"), function(err) {
+
+		});
+	},
 	'click .training-data':function(event) {
 		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag});
 	},
@@ -82,7 +88,7 @@ Template.project.onCreated(function() {
 	Meteor.call('spectra:xrange', FlowRouter.getParam("id"), (err, range)=> {
 		this.range.set(range);
 	});
-	
+
 });
 
 Template.project.onRendered(function() {

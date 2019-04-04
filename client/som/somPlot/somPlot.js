@@ -102,7 +102,7 @@ Template.somPlot.helpers({
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
 	viewBoxSize: function() {
-		return (Math.sqrt(Template.instance().data.k.neurons.length + 1)) * 13;
+		return (Math.sqrt(Template.instance().data.k.numNeurons)) * 10 + 10;
 	},
 	classes: function() {
 		return Template.instance().data.k.labelEnum;
