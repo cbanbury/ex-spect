@@ -90,8 +90,6 @@ Template.project.onCreated(function() {
 });
 
 Template.project.onRendered(function() {
-	console.log('cross validation dummy')
-	window.cv.folds([], 10);
 	import materialize from 'materialize-css';
 	$('ul.tabs').tabs();
 	$('.collapsible').collapsible();

@@ -55,9 +55,7 @@
 				   <thead>
 				     <tr>
 				         <th>Grid Size</th>
-				         <th>Learning Rate</th>
-				         <th>Learning Steps</th>
-				         <th>Neighbourhood Size</th>
+				         <th>Status</th>
 				         <th>LVQ</th>
 				         <th></th>
 				     </tr>
@@ -66,12 +64,10 @@
 				   	{{#each models}}
 				   		<tr>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
-				   		  <td>{{this.model.maxLearningCoef}}</td>
-				   		  <td>{{this.model.maxStep}}</td>
-				   		  <td>{{this.model.maxNeighborhood}}</td>
+				   		  <td>{{this.status}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>
-				   		  	<a class="waves-effect waves-light btn load-model" id="{{this._id}}">load</a>
+				   		  	<a class="waves-effect waves-light btn load-model" {{isDisabled this.status}} id="{{this._id}}">load</a>
 				   		  	<a class="waves-effect waves-light btn del-model red" id="{{this._id}}">del</a>
 				   		  </td>
 				   		</tr>

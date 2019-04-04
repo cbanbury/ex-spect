@@ -33,7 +33,7 @@ Meteor.publish("user:spectra", function() {
 })
 
 Meteor.publish("SOM", function() {
-    return SOM.find({uid: this.userId});
+    return SOM.find({uid: this.userId}, {fields: {positions:0, model:0}, sort: {created_at: -1}});
 });
 
 Meteor.publish("SOM:model", function(modelId) {

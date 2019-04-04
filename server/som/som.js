@@ -11,23 +11,20 @@ function mapLabels(spectra, labelEnum) {
 }
 
 Meteor.methods({
-    'SOM:save': function(model, projectId, LVQ) {
-        // make sure we don't duplicate the data
-        delete model._data;
-        SOM.insert({
-            completed_at: new Date(),
-            uid: Meteor.userId(),
-            model: model,
-            projectId: projectId,
-            gridSize: Math.sqrt(model.numNeurons),
-            lvq: LVQ
-        });
-    },
     'SOM:delete': function(id) {
-        SOM.remove({uid: Meteor.userId(), _id: id});
+        var result = SOM.remove({uid: Meteor.userId(), _id: id});
     },
     'SOM:compute': function(projectId, props) {
         console.log('New call to build SOM');
+        var somID = new Mongo.ObjectID().toString();
+        SOM.insert({
+            status: 0,
+            _id: somID,
+            uid: Meteor.userId(),
+            projectId: projectId,
+            gridSize: props.gridSize,
+            created_at: new Date()
+        });
         // define ids for labels
         var labels = props.labels;
         labels = labels.map(function(item, index) {
@@ -53,25 +50,34 @@ Meteor.methods({
         });
 
         console.log('Starting learning');
-        k.learn((neurons, step)=>{console.log(step)});
+        var logLevel = props.steps / 10;
+        k.learn((neurons, step)=>{
+          if (step % logLevel == 0) {
+            var percent = (step / props.steps) * 100;
+            console.log(percent + '%');
+            SOM.update({_id: somID}, {$set: {
+                status: percent
+              }
+            });
+          }
+          // console.log(step)
+        });
         if (props.lvq) {
           k.LVQ();
         }
-
         console.log('Finished learning');
 
         console.log('Saving model');
         var mapping = k.mapping();
         var model = k.export();
         delete model._data;
-        SOM.insert({
+        SOM.update({_id: somID}, {$set: {
+            status: 100,
             completed_at: new Date(),
-            uid: Meteor.userId(),
             model: model,
             positions: mapping,
-            projectId: projectId,
-            gridSize: Math.sqrt(model.numNeurons),
             lvq: props.lvq
+          }
         });
         console.log('Saved model');
     },

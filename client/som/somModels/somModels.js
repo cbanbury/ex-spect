@@ -33,12 +33,18 @@ Template.somModels.events({
 })
 
 Template.somModels.helpers({
+	'isDisabled': function(status) {
+			if (status === 100) {
+				return '';
+			}
+			return 'disabled';
+	},
 	'labels': function() {
 		project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 		return project.labels;
 	},
 	'models':function() {
-		return SOM.find({projectId: FlowRouter.getParam("id")}, {sort: {completed_at: -1}});
+		return SOM.find({projectId: FlowRouter.getParam("id")});
 	},
 	'crumbs': function() {
 		var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
