@@ -7,6 +7,10 @@
 			<div class="col s3">
 					<form class="compute-som">
 							<div class="input-field col s12">
+									<input id="description" type="text" class="validate" required>
+									<label class="active" for="description">Description</label>
+							</div>
+							<div class="input-field col s12">
 									<input value=10 min=2 max=20 step=1 id="gridSize" type="number" class="validate">
 									<label class="active" for="gridSize">Grid Size (NxN)</label>
 							</div>
@@ -54,8 +58,9 @@
 				<table>
 				   <thead>
 				     <tr>
+							 		<th>Description</th>
 				         <th>Grid Size</th>
-				         <th>Status</th>
+				         <th>Build Status (%)</th>
 				         <th>LVQ</th>
 				         <th></th>
 				     </tr>
@@ -63,6 +68,7 @@
 				   <tbody>
 				   	{{#each models}}
 				   		<tr>
+								<td>{{this.description}}</td>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
 				   		  <td>{{this.status}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>

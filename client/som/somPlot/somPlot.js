@@ -121,7 +121,7 @@ Template.somPlot.helpers({
 			var simulation = d3.forceSimulation(nodes)
 			  .force("x", d3.forceX(Template.instance().getX))
 			  .force("y", d3.forceY(Template.instance().getY))
-			  // .force("charge", d3.forceManyBody().strength(-0.04).distanceMax(radius-2))
+			  // .force("charge", d3.forceManyBody().strength(-0.04).distanceMax(Template.instance().scaleFactor))
 			  .force('collision', d3.forceCollide().radius(function(d) {
 			    return Template.instance().scaleFactor;
 			  }))
@@ -135,7 +135,7 @@ Template.somPlot.helpers({
 			  u.enter()
 			    .append('circle')
 			    .attr('r', function(d) {
-			      return 0.3
+			      return Template.instance().scaleFactor
 			    })
 			    .merge(u)
 			    .attr('cx', _.get('x'))

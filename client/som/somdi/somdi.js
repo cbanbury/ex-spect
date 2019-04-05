@@ -18,7 +18,7 @@ Template.somdi.onCreated(function () {
 					name: label.tag
 				});
 			});
-			
+
 			var layout = {
 			    autosize: true,
 			    // width: 350,

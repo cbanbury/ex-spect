@@ -6,6 +6,7 @@ Template.somModels.events({
 		Meteor.call('SOM:delete', event.target.id);
 	},
 	'submit .compute-som': function(event, instance) {
+			console.log('called submit');
 			event.preventDefault();
 			var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 
@@ -23,7 +24,8 @@ Template.somModels.events({
 				learningRate: +event.target.learning_rate.value,
 				steps: +event.target.steps.value,
 				lvq: event.target.lvq.checked,
-				neighbourhood: +event.target.neighbourhood.value
+				neighbourhood: +event.target.neighbourhood.value,
+				description: event.target.description.value
 			}
 
 			var projectId = FlowRouter.getParam("id");
