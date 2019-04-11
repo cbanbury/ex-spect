@@ -24,13 +24,18 @@ Template.somModels.events({
 				learningRate: +event.target.learning_rate.value,
 				steps: +event.target.steps.value,
 				lvq: event.target.lvq.checked,
-				neighbourhood: +event.target.neighbourhood.value,
 				description: event.target.description.value
 			}
 
 			var projectId = FlowRouter.getParam("id");
-			Meteor.call('SOM:compute', projectId, props);
-			M.toast({html: 'Model building', displayLength: 2000});
+
+			if (event.target.cv.checked) {
+				Meteor.call('SOM:cross-validate', projectId, props);
+				M.toast({html: 'Running cross validation', displayLength: 2000});
+			} else {
+				Meteor.call('SOM:compute', projectId, props);
+				M.toast({html: 'Model building', displayLength: 2000});
+			}
 	},
 })
 

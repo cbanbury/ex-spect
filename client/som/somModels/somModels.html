@@ -31,12 +31,12 @@
 									{{/each}}
 							</div>
 							<div class="input-field col s12">
-									<input value=0.5 min=0 max=10 step=0.01 id="learning_rate" type="number" class="validate">
+									<input value=0.1 min=0.01 max=10 step=0.01 id="learning_rate" type="number" class="validate">
 									<label class="active" for="learning_rate">Learning Rate</label>
 							</div>
 							<div class="input-field col s12">
-									<input value="1000" min=0 step=1 max=1000000 id="steps" type="number" class="validate">
-									<label class="active" for="steps">Learning Steps</label>
+									<input value="1" min=0 step=1 max=1000 id="steps" type="number" class="validate">
+									<label class="active" for="steps">Epochs</label>
 							</div>
 							<div class="col s12 switch">
 									<label>
@@ -45,11 +45,14 @@
 										<span class="lever"></span>
 									</label>
 							</div>
-							<div class="input-field col s12">
-									<input value="5" min=0.1 max=13 step=0.01 id="neighbourhood" type="number" class="validate">
-									<label class="active" for="neighbourhood">Neighbourhood</label>
+							<div class="col s12 switch">
+									<label>
+										Run Cross Validation
+										<input type="checkbox" id="cv">
+										<span class="lever"></span>
+									</label>
 							</div>
-							<div class="col s12">
+							<div class="col s6">
 									<button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">new</button>
 							</div>
 					</form>
@@ -60,7 +63,7 @@
 				     <tr>
 							 		<th>Description</th>
 				         <th>Grid Size</th>
-				         <th>Build Status (%)</th>
+				         <th>Cross Validation</th>
 				         <th>LVQ</th>
 				         <th></th>
 				     </tr>
@@ -70,7 +73,7 @@
 				   		<tr>
 								<td>{{this.description}}</td>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
-				   		  <td>{{this.status}}</td>
+				   		  <td>{{#if this.cv}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>
 				   		  	<a class="waves-effect waves-light btn load-model" {{isDisabled this.status}} id="{{this._id}}">load</a>

@@ -18,6 +18,19 @@ Meteor.methods({
         console.log(somID)
         Jobs.run("buildSOM", projectId, props, somID, Meteor.userId(), {singular: true});
     },
+    'SOM:cross-validate': function(projectId, props) {
+      console.log('New call for cross validation');
+      var somID = SOM.insert({
+          status: 0,
+          uid: Meteor.userId(),
+          projectId: projectId,
+          gridSize: props.gridSize,
+          created_at: new Date(),
+          description: props.description
+      });
+      
+      Jobs.run("crossValidation", projectId, props, somID, Meteor.userId());
+    },
     'SOM:getModel': function(somId, projectId) {
       var project = Projects.findOne({_id: projectId});
       var som = SOM.findOne({_id: somId});
