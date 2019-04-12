@@ -41,7 +41,7 @@ Jobs.register({
       });
 
       console.log('Starting learning');
-      var logLevel = props.steps / 10;
+
       k.learn((neurons, step)=>{
         console.log(step)
       });
