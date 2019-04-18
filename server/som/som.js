@@ -1,7 +1,19 @@
-import _ from 'lodash/fp';
-
+import _ from 'lodash';
+import Matrix from 'ml-matrix';
 const { fork } = require('child_process');
 const path = require('path');
+
+import Kohonen, {hexagonHelper} from 'kohonen';
+
+function mapLabels(spectra, labelEnum) {
+  return spectra.map((spectrum)=>{
+    var match = labelEnum.filter((item)=>{return item.tag === spectrum.label});
+    if (match && match.length === 1) {
+      return match[0].id;
+    }
+    return -1;
+  });
+}
 
 Meteor.methods({
     'SOM:delete': function(id) {
@@ -33,6 +45,40 @@ Meteor.methods({
       });
 
       Jobs.run("crossValidation", projectId, props, somID, Meteor.userId());
+    },
+    'SOM:test-data': function(somId, projectId) {
+      var som = SOM.findOne({_id: somId});
+      var k = new Kohonen();
+      k.import([], [], som.model);
+
+      // load test Data
+      var testData = Spectra.find({uid: Meteor.userId(),
+          projectId: projectId, label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}},
+          {y: 1, label: 1}).fetch();
+      var predictions = k._predict(testData.map(function(item){return item.y}));
+      var accuracy = 0;
+      var total = testData.length;
+      var maxLabel = _.maxBy(som.model.labelEnum, (item)=>{return item.id});
+
+      maxLabel = maxLabel.id +1;
+      var confusionMatrix = Matrix.zeros(maxLabel, maxLabel);
+
+      var testLabels = mapLabels(testData, som.model.labelEnum);
+      testLabels.forEach(function(actual, index) {
+        var prediction = predictions[index];
+       	if (actual === prediction) {
+       	  accuracy++;
+       	}
+
+       	confusionMatrix.set(actual, prediction, confusionMatrix.get(actual, prediction) + 1);
+      });
+
+      SOM.update({_id: somId}, {$set: {
+        test: {
+          accuracy: (accuracy / total) * 100,
+          confusionMatrix: confusionMatrix.to2DArray()
+        }
+      }})
     },
     'SOM:getModel': function(somId, projectId) {
       var project = Projects.findOne({_id: projectId});

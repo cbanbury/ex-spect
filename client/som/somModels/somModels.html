@@ -73,7 +73,7 @@
 				   		<tr>
 								<td>{{this.description}}</td>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
-				   		  <td>{{#if this.cv}}&#10003;{{else}}&#10007;{{/if}}</td>
+				   		  <td>{{#if this.cv}}{{cv.accuracy}}{{else}}&#10007;{{/if}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>
 				   		  	<a class="waves-effect waves-light btn load-model" {{isDisabled this.status}} id="{{this._id}}">load</a>
