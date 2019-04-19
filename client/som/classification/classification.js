@@ -17,7 +17,9 @@ Template.classification.helpers({
 		}
 	},
 	'testData': ()=>{
-		return TestSpectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id")}).count();
+		var som = SOM.findOne({_id: FlowRouter.getQueryParam('m')});
+		return TestSpectra.find({uid: Meteor.userId(), projectId: FlowRouter.getParam("id"),
+		label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}}).count();
 	},
 	'confusionRow': (index)=>{
 		return SOM.findOne({_id: FlowRouter.getQueryParam('m')}).test.confusionMatrix[index];

@@ -47,12 +47,13 @@ Meteor.methods({
       Jobs.run("crossValidation", projectId, props, somID, Meteor.userId());
     },
     'SOM:test-data': function(somId, projectId) {
+      console.log('running test data');
       var som = SOM.findOne({_id: somId});
       var k = new Kohonen();
       k.import([], [], som.model);
 
       // load test Data
-      var testData = Spectra.find({uid: Meteor.userId(),
+      var testData = TestSpectra.find({uid: Meteor.userId(),
           projectId: projectId, label: {$in: som.model.labelEnum.map((item)=>{return item.tag})}},
           {y: 1, label: 1}).fetch();
       var predictions = k._predict(testData.map(function(item){return item.y}));
@@ -79,6 +80,7 @@ Meteor.methods({
           confusionMatrix: confusionMatrix.to2DArray()
         }
       }})
+      console.log('finished running test data');
     },
     'SOM:getModel': function(somId, projectId) {
       var project = Projects.findOne({_id: projectId});
