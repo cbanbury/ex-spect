@@ -19,10 +19,10 @@ Meteor.methods({
         var minX = temp.filter((item)=>{return item<=from}).length -1;
         var maxX = temp.filter((item)=>{return item>=to})[0];
         maxX = temp.indexOf(maxX);
-        
+
         var spectra = Spectra.find({projectId: projectId}, {fields: {x:1, y:1}});
         spectra.forEach(function(spectrum) {
-            Spectra.update({_id: spectrum._id}, {$set: 
+            Spectra.update({_id: spectrum._id}, {$set:
                 {
                     x: spectrum.x.slice(minX, maxX),
                     y: spectrum.y.slice(minX, maxX),
@@ -32,14 +32,14 @@ Meteor.methods({
 
         var testData = TestSpectra.find({projectId: projectId}, {fields: {x:1, y:1}});
         testData.forEach(function(spectrum) {
-            TestSpectra.update({_id: spectrum._id}, {$set: 
+            TestSpectra.update({_id: spectrum._id}, {$set:
                 {
                     x: spectrum.x.slice(minX, maxX),
                     y: spectrum.y.slice(minX, maxX),
                 }
             })
         });
-        
+
         return true;
     },
     'spectra:xrange': function(projectId) {
@@ -56,4 +56,30 @@ Meteor.methods({
             _id: id
         });
     },
+    'spectra:pluck:test': function(projectId) {
+      var project = Projects.findOne({_id: projectId});
+      var split = Spectra.find({projectId: projectId, label: project.labels[0].tag}).count() * 0.2;
+      console.log('got split ' + split)
+      project.labels.forEach((label)=> {
+        // add to test data
+        const collection = Spectra.rawCollection();
+        const aggregate = Meteor.wrapAsync(collection.aggregate, collection)
+        var spectra = Spectra.rawCollection().aggregate([
+          {$match:{label: label.tag, projectId: projectId}},
+          {$sample:{size: split}}
+        ]).toArray();
+
+        spectra.then((result)=>{
+          console.log('plucking data ' + result.length);
+          result.forEach((spectrum)=>{
+              var temp = spectrum._id;
+              // spectrum._id = new Meteor.Collection.ObjectID();
+              TestSpectra.insert(spectrum);
+              Spectra.remove({_id: temp});
+          });
+        })
+
+      });
+      return true;
+    }
 });

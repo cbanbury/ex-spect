@@ -1,20 +1,16 @@
 import Kohonen, { hexagonHelper } from 'kohonen';
 
 Template.somdi.onCreated(function () {
-	this.x = new ReactiveVar();
 	// remember arrow functions do not bind this!
 	this.autorun(()=>{
-		this.spectraSubscription = this.subscribe('project:spectra', FlowRouter.getParam("id"));
 		this.somdi = new ReactiveVar();
 
-		if (this.spectraSubscription.ready()) {
-			this.x.set(Spectra.findOne({projectId: FlowRouter.getParam("id")}, {x: 1}).x);
-
+		Meteor.call('SOM:getX', (err, x)=> {
 			var out = [];
 			this.data.k.labelEnum.forEach((label)=>{
 				out.push({
 					mode: 'lines',
-					x: this.x.get(),
+					x: x,
 					y: this.data.k.SOMDI(label.id).somdi,
 					line: {
 						color: label.color
@@ -22,7 +18,7 @@ Template.somdi.onCreated(function () {
 					name: label.tag
 				});
 			});
-			
+
 			var layout = {
 			    autosize: true,
 			    // width: 350,
@@ -57,6 +53,6 @@ Template.somdi.onCreated(function () {
 			window.onresize = function() {
 			    Plotly.Plots.resize(gd);
 			};
-		}
+		})
 	});
 });

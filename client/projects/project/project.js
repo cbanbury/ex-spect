@@ -1,5 +1,3 @@
-import '../../lib/cross-validation';
-
 Template.project.helpers({
 	'project': function() {
 		return Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
@@ -38,6 +36,12 @@ Template.project.helpers({
 });
 
 Template.project.events({
+	'click .pluck-data': function(event) {
+		event.preventDefault();
+		Meteor.call('spectra:pluck:test', FlowRouter.getParam("id"), function(err) {
+
+		});
+	},
 	'click .training-data':function(event) {
 		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag});
 	},
@@ -82,12 +86,10 @@ Template.project.onCreated(function() {
 	Meteor.call('spectra:xrange', FlowRouter.getParam("id"), (err, range)=> {
 		this.range.set(range);
 	});
-	
+
 });
 
 Template.project.onRendered(function() {
-	console.log('cross validation dummy')
-	window.cv.folds([], 10);
 	import materialize from 'materialize-css';
 	$('ul.tabs').tabs();
 	$('.collapsible').collapsible();

@@ -23,3 +23,4 @@ TestSpectra.allow({
 
 Projects.permit('insert').ifLoggedIn();
 Projects.permit('remove').ifLoggedIn();
+SOM.permit('remove').ifLoggedIn();

@@ -4,19 +4,66 @@
 			{{>breadcrumbs crumbs=crumbs}}
 		</div>
 		<div class="row">
-			<div class="col s12">
-				<a class="waves-effect waves-light btn new-model">new</a>
+			<div class="col s3">
+					<form class="compute-som">
+							<div class="input-field col s12">
+									<input id="description" type="text" class="validate" required>
+									<label class="active" for="description">Description</label>
+							</div>
+							<div class="input-field col s12">
+									<input value=10 min=2 max=20 step=1 id="gridSize" type="number" class="validate">
+									<label class="active" for="gridSize">Grid Size (NxN)</label>
+							</div>
+							<div class="col s12">
+									<label>Include Data</label>
+							</div>
+							<div class="col s12 collection">
+									{{#each labels}}
+											<div class="col s12 input-field">
+												<p>
+													<label>
+														<input type="checkbox" checked="checked" id="label-{{this.tag}}"/>
+														<span></span>
+														{{this.tag}}
+													</label>
+												</p>
+											</div>
+									{{/each}}
+							</div>
+							<div class="input-field col s12">
+									<input value=0.1 min=0.01 max=10 step=0.01 id="learning_rate" type="number" class="validate">
+									<label class="active" for="learning_rate">Learning Rate</label>
+							</div>
+							<div class="input-field col s12">
+									<input value="1" min=0 step=1 max=1000 id="steps" type="number" class="validate">
+									<label class="active" for="steps">Epochs</label>
+							</div>
+							<div class="col s12 switch">
+									<label>
+										LVQ
+										<input type="checkbox" id="lvq">
+										<span class="lever"></span>
+									</label>
+							</div>
+							<div class="col s12 switch">
+									<label>
+										Run Cross Validation
+										<input type="checkbox" id="cv">
+										<span class="lever"></span>
+									</label>
+							</div>
+							<div class="col s6">
+									<button id="runButton" class="waves-effect waves-light btn {{dataLoaded}}" type="submit">new</button>
+							</div>
+					</form>
 			</div>
-		</div>
-		<div class="row">
-			<div class="col s12">
+			<div class="col s9">
 				<table>
 				   <thead>
 				     <tr>
+							 		<th>Description</th>
 				         <th>Grid Size</th>
-				         <th>Learning Rate</th>
-				         <th>Learning Steps</th>
-				         <th>Neighbourhood Size</th>
+				         <th>Cross Validation</th>
 				         <th>LVQ</th>
 				         <th></th>
 				     </tr>
@@ -24,13 +71,12 @@
 				   <tbody>
 				   	{{#each models}}
 				   		<tr>
+								<td>{{this.description}}</td>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
-				   		  <td>{{this.model.maxLearningCoef}}</td>
-				   		  <td>{{this.model.maxStep}}</td>
-				   		  <td>{{this.model.maxNeighborhood}}</td>
+				   		  <td>{{#if this.cv}}{{cv.accuracy}}{{else}}&#10007;{{/if}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>
-				   		  	<a class="waves-effect waves-light btn load-model" id="{{this._id}}">load</a>
+				   		  	<a class="waves-effect waves-light btn load-model" {{isDisabled this.status}} id="{{this._id}}">load</a>
 				   		  	<a class="waves-effect waves-light btn del-model red" id="{{this._id}}">del</a>
 				   		  </td>
 				   		</tr>
