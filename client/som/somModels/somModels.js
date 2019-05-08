@@ -53,6 +53,9 @@ Template.somModels.helpers({
 	'models':function() {
 		return SOM.find({projectId: FlowRouter.getParam("id")});
 	},
+	'round': function(number) {
+		return number.toFixed(2);
+	},
 	'crumbs': function() {
 		var project = Projects.findOne({_id: FlowRouter.getParam("id"), uid: Meteor.userId()});
 		return [

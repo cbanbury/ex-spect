@@ -35,7 +35,7 @@
 									<label class="active" for="learning_rate">Learning Rate</label>
 							</div>
 							<div class="input-field col s12">
-									<input value="1" min=0 step=1 max=1000 id="steps" type="number" class="validate">
+									<input value="1" min=0 step=0.001 max=1000 id="steps" type="number" class="validate">
 									<label class="active" for="steps">Epochs</label>
 							</div>
 							<div class="col s12 switch">
@@ -73,7 +73,7 @@
 				   		<tr>
 								<td>{{this.description}}</td>
 				   		  <td>{{this.gridSize}}x{{this.gridSize}}</td>
-				   		  <td>{{#if this.cv}}{{cv.accuracy}}{{else}}&#10007;{{/if}}</td>
+				   		  <td>{{#if this.cv}}{{round cv.accuracy}}{{else}}&#10007;{{/if}}</td>
 				   		  <td>{{#if this.lvq}}&#10003;{{else}}&#10007;{{/if}}</td>
 				   		  <td>
 				   		  	<a class="waves-effect waves-light btn load-model" {{isDisabled this.status}} id="{{this._id}}">load</a>
