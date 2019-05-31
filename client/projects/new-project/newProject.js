@@ -1,6 +1,5 @@
-Labels = new Mongo.Collection(null);
-
 Template.newProject.onCreated(function(){
+	Labels.remove({});
 	Labels.insert({tag: 'Control', color: '#2962ff'})
 	Labels.insert({tag: 'Test', color: '#d50000'})
 })
@@ -28,10 +27,12 @@ Template.newProject.events({
 		Labels.update({_id: id}, {$set: {color: event.target.value}});
 	},
 	'click .add-label': function(event) {
+		event.preventDefault();
 		Labels.insert({tag: 'New', color: '#212121'})
 		jscolor.installByClassName("jscolor");
 	},
 	'click .remove-label': function(event) {
+		event.preventDefault();
 		Labels.remove({_id: event.target.id})
 	},
 	'submit .save-project':function(event) {

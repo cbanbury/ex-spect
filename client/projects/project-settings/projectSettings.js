@@ -1,5 +1,3 @@
-Labels = new Mongo.Collection(null);
-
 Template.projectSettings.helpers({
 	'crumbs': function() {
 		var project = Template.instance().projectData.get();
@@ -27,6 +25,7 @@ Template.projectSettings.helpers({
 });
 
 Template.projectSettings.onCreated(function() {
+	Labels.remove({});
 	this.projectData = new ReactiveVar({name: ''});
 });
 
@@ -53,10 +52,12 @@ Template.projectSettings.events({
 		Labels.update({_id: id}, {$set: {color: event.target.value}});
 	},
 	'click .add-label': function(event) {
+		event.preventDefault();
 		Labels.insert({tag: 'New', color: '#212121'})
 		jscolor.installByClassName("jscolor");
 	},
 	'click .remove-label': function(event) {
+		event.preventDefault();
 		Labels.remove({_id: event.target.id})
 	},
 	'submit .save-project':function(event) {
