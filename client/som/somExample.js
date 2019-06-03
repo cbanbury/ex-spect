@@ -4,28 +4,46 @@ Template.somExample.onRendered(function() {
     import d3 from 'd3';
 
     var data = [
+        // reds
         [255, 0 , 0],
-        [180, 0 , 0],
-        [150, 0 , 0],
-        [80, 0 , 0],
-        [100, 0 , 0],
+        [229,57,53],
+        [183,28,28],
+        [255,205,210],
+        [255,23,68],
+        [213,0,0],
+        // greens
         [0, 255, 0],
+        [27,94,32],
+        [0,200,83],
+        [200,230,201],
+        [118,255,3],
+        [56,142,60],
+        // blues
         [0, 0, 255],
-        [50, 0, 0],
-        [0, 100, 0],
-        [0, 120, 0]
+        [187,222,251],
+        [13,71,161],
+        [41,98,255],
+        [130,177,255],
+        [24,255,255]
     ];
+
+    var labels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     // setup the self organising map
     var hexagonData = hexagonHelper.generateGrid(6, 6);
-    const k = new Kohonen({data, neurons: hexagonData});
-    k.training();
+    const k = new Kohonen({
+        data: data,
+        labels: labels,
+        neurons: hexagonData,
+        maxStep: 100,
+        maxLearningCoef: 0.1,
+        minLearningCoef: 0.001,
+        maxNeighborhood: 6,
+        minNeighborhood: 1,
+        norm: 'max'
+    });
+    k.learn();
     var somData = k.mapping();
-
-    // the umatrix is a greyscale map that allows automatic visualisations.
-    // not using it here to let us define colours based on how they are defined
-    // in the data.
-    var umatrix = k.umatrix();
 
     // scale up the hexagons so we can visualise it on screen
     const stepX = 25;
@@ -73,7 +91,7 @@ Template.somExample.onRendered(function() {
             var index = 0;
             var foo = somData.find(function(value, i) {
                 index = i;
-                return value === currentHexagon.pos;
+                return value[0] === currentHexagon.pos;
             });
 
             // set colour to match the RGB value from the datas
@@ -81,37 +99,6 @@ Template.somExample.onRendered(function() {
                 return 'rgb(' + data[index][0] + ',' + data[index][1] + ',' + data[index][2] + ')';
             }
             return 'rgb(255, 255, 255)';
-       })
-       .attr('stroke', '#ccc');
-
-       var chart2 = d3.select("#chart2").append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-       const mGrid = chart2.append('g')
-       .attr('id', 'g-grid');
-
-       const grid2 = mGrid.selectAll('.grid').data(hexagonData);
-       grid2.enter().append('path')
-       .attr('class', 'grid')
-       .attr('d', function(center) {
-           return d3.line()(hexagonPath(center.pos.map(scaleGrid)));
-       })
-       .attr('fill', function(currentHexagon) {
-           // find the element in our data that matches the current co-ordinate
-            var index = 0;
-            var foo = somData.find(function(value, i) {
-                index = i;
-                return value === currentHexagon.pos;
-            });
-
-            // set colour to match the RGB value from the datas
-            if (foo && data[index][0] > 50) {
-                return 'rgb(255, 214, 0)';
-            }
-            return 'rgb(93, 64, 55)';
        })
        .attr('stroke', '#ccc');
 });
