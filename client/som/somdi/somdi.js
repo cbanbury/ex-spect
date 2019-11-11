@@ -5,7 +5,7 @@ Template.somdi.onCreated(function () {
 	this.autorun(()=>{
 		this.somdi = new ReactiveVar();
 
-		Meteor.call('SOM:getX', (err, x)=> {
+		Meteor.call('SOM:getX', FlowRouter.getParam("id"), (err, x)=> {
 			var out = [];
 			this.data.k.labelEnum.forEach((label)=>{
 				out.push({

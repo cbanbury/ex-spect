@@ -42,6 +42,12 @@ Template.project.events({
 
 		});
 	},
+	'click .flatten-data': function(event) {
+		event.preventDefault();
+		Meteor.call('spectra:flatten', FlowRouter.getParam("id"), function(err) {
+
+		})
+	},
 	'click .training-data':function(event) {
 		FlowRouter.go('projectUpload', {id: FlowRouter.getParam("id")}, {label: this.tag});
 	},

@@ -42,6 +42,35 @@ Meteor.methods({
 
         return true;
     },
+    'spectra:flatten': function(projectId) {
+        console.log('flattening data');
+        var temp = Spectra.findOne({projectId: projectId}, {fields: {x:1}});
+
+        var minX = temp.x[0];
+        var maxX = temp.x[temp.x.length -1];
+
+        var spectra = Spectra.find({projectId: projectId}, {fields: {x:1, y:1}});
+        spectra.forEach(function(spectrum) {
+            // define gradient
+            var minY = spectrum.y[0];
+            var maxY = spectrum.y[spectrum.y.length-1];
+            var m = (maxY - minY) / (maxX - minX);
+
+            spectrum.y.forEach((element, index)=>{
+                spectrum.y[index] =(spectrum.y[index] - (m*spectrum.x[index]));
+            });
+
+            Spectra.update({_id: spectrum._id}, {$set:
+                {
+                    y: spectrum.y,
+                }
+            });
+        });
+
+        console.log('finishing flattening data');
+
+        return true;
+    },
     'spectra:xrange': function(projectId) {
         var spectrum = Spectra.findOne({projectId: projectId}, {fields: {x:1}});
         if (spectrum.x) {

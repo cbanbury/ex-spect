@@ -69,6 +69,11 @@ Template.upload.events({
                         data.y = _.reverse(data.y);
                     }
 
+                    if (isNaN(data.x[0])) {
+                        data.x.shift();
+                        data.y.shift();
+                    }
+
                     var doc = {
                         label: FlowRouter.getQueryParam('label'),
                         uid: Meteor.userId(),
