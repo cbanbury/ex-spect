@@ -33,7 +33,7 @@ Jobs.register({
         neurons,
         maxStep: props.steps * spectra.length,
         maxLearningCoef: props.learningRate,
-        minLearningCoef: 0.001,
+        minLearningCoef: 0.00001,
         maxNeighborhood: props.gridSize * (2 / 3),
         minNeighborhood: 0.1,
         // distance: 'manhattan',
