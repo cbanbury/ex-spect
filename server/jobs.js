@@ -12,8 +12,17 @@ function mapLabels(spectra, labelEnum) {
   });
 }
 
+function sampleSpectra(userId, projectId, tag, size) {
+  const collection = Spectra.rawCollection()
+  const aggregate = Meteor.wrapAsync(collection.aggregate, collection)
+  temp = aggregate([{$match: {uid: userId, projectId: projectId, label: tag}},
+                 {$project: {y:1, label: 1}}, {$sample: {'size': size}}]);
+  temp = temp.toArray().await();
+  return temp;
+}
+
 Jobs.register({
-    "buildSOM": function (projectId, props, somID, userId) {
+    "buildSOM": function (projectId, props, somID, userId, oversample) {
       console.log('Starting to build SOM for project ' + projectId);
 
       // define ids for labels
@@ -29,39 +38,33 @@ Jobs.register({
 
       var spectra = Spectra.find({uid: userId,
           projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
-      console.log('spectra before: ' + spectra.legnth);
       
-      // if (maxCount !== minCount) {
-      //   console.log('fixing class imbalance');
-      //   labels.forEach((item)=>{
-      //     if (item.count < maxCount) {
-      //       console.log('got here ' + item.tag);
-      //       // randomly sample additional maxCount - minCount spectra
-      //       var diff = maxCount - item.count;
-            
-      //       if (diff > item.count) {
-      //         var batches = diff / item.count;
-      //         console.log('need ' + batches);
-      //         for (var i=1; i<Math.floor(batches); i++) {
-      //           temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': item.count}}]);
-      //           spectra.push(temp);
-      //         }
-      //         var remainder = diff % item.count;
-      //         if (remainder > 0) {
-      //           temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': remainder}}]);
-      //           spectra.push(temp);
-      //         }
-      //       } else {
-      //         console.log('only need single batch  ' + diff);
-      //         var temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': diff}}]);
-      //         spectra.push(temp);
-      //       }
-      //     }
-      //   });
-      //   console.log('spectra after:' + spectra.length);
-      // }
+      if (oversample && maxCount !== minCount) {
+        console.log('fixing class imbalance');
+        labels.forEach((item)=>{
+          if (item.count < maxCount) {
+            // randomly sample additional maxCount - minCount spectra
+            var diff = maxCount - item.count;
 
-      return;
+            
+            if (diff > item.count) {
+              var batches = diff / item.count;
+              for (var i=0; i<Math.floor(batches); i++) {
+                temp = sampleSpectra(userId, projectId, item.tag, item.count);
+                spectra = spectra.concat(temp);
+              }
+              var remainder = diff % item.count;
+              if (remainder > 0) {
+                temp = sampleSpectra(userId, projectId, item.tag, remainder);
+                spectra = spectra.concat(temp);
+              }
+            } else {
+              temp = sampleSpectra(userId, projectId, item.tag, diff);
+              spectra = spectra.concat(temp);
+            }
+          }
+        });
+      }
 
       var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
       const k = new Kohonen({
@@ -106,7 +109,7 @@ Jobs.register({
 });
 
 Jobs.register({
-  "crossValidation": function(projectId, props, somID, userId) {
+  "crossValidation": function(projectId, props, somID, userId, oversample) {
     console.log('Starting cross validation');
     var labels = props.labels;
     labels = labels.map(function(item, index) {
@@ -115,6 +118,35 @@ Jobs.register({
 
     var spectra = Spectra.find({uid: userId,
       projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
+
+    // handle class inbalance
+    var maxCount = Math.max.apply(Math, labels.map(function(item) { return item.count;}));
+    var minCount = Math.min.apply(Math, labels.map(function(item) { return item.count;}));
+    if (oversample && maxCount !== minCount) {
+      console.log('fixing class imbalance');
+      labels.forEach((item)=>{
+        if (item.count < maxCount) {
+          // randomly sample additional maxCount - minCount spectra
+          var diff = maxCount - item.count;
+
+          if (diff > item.count) {
+            var batches = diff / item.count;
+            for (var i=0; i<Math.floor(batches); i++) {
+              temp = sampleSpectra(userId, projectId, item.tag, item.count);
+              spectra = spectra.concat(temp);
+            }
+            var remainder = diff % item.count;
+            if (remainder > 0) {
+              temp = sampleSpectra(userId, projectId, item.tag, remainder);
+              spectra = spectra.concat(temp);
+            }
+          } else {
+            temp = sampleSpectra(userId, projectId, item.tag, diff);
+            spectra = spectra.concat(temp);
+          }
+        }
+      });
+    }
 
     const confusionMatrix = crossValidation.kFold(
       _.map(_.get('y'), spectra),
@@ -151,7 +183,7 @@ Jobs.register({
       confusionMatrix: confusionMatrix.getMatrix()
     }
     SOM.update({_id: somID}, {$set: {cv: doc}});
-    Jobs.run("buildSOM", projectId, props, somID, userId, {singular: true});
+    Jobs.run("buildSOM", projectId, props, somID, userId, oversample, {singular: true});
     this.success();
   }
 });

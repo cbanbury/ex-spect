@@ -19,7 +19,7 @@ Meteor.methods({
     'SOM:delete': function(id) {
         var result = SOM.remove({uid: Meteor.userId(), _id: id});
     },
-    'SOM:compute': function(projectId, props) {
+    'SOM:compute': function(projectId, props, balance) {
       console.log('New call to build SOM');
       var somID = SOM.insert({
           status: 0,
@@ -28,12 +28,13 @@ Meteor.methods({
           projectId: projectId,
           gridSize: props.gridSize,
           created_at: new Date(),
-          description: props.description
+          description: props.description,
+          oversample: balance
       });
 
-      Jobs.run("buildSOM", projectId, props, somID, Meteor.userId(), {singular: true});
+      Jobs.run("buildSOM", projectId, props, somID, Meteor.userId(), balance, {singular: true});
     },
-    'SOM:cross-validate': function(projectId, props) {
+    'SOM:cross-validate': function(projectId, props, balance) {
       console.log('New call for cross validation');
       var somID = SOM.insert({
           status: 0,
@@ -41,10 +42,11 @@ Meteor.methods({
           projectId: projectId,
           gridSize: props.gridSize,
           created_at: new Date(),
-          description: props.description
+          description: props.description,
+          oversample: balance
       });
 
-      Jobs.run("crossValidation", projectId, props, somID, Meteor.userId());
+      Jobs.run("crossValidation", projectId, props, somID, Meteor.userId(), balance);
     },
     'SOM:test-data': function(somId, projectId) {
       console.log('running test data');

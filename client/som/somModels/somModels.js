@@ -28,12 +28,13 @@ Template.somModels.events({
 			}
 
 			var projectId = FlowRouter.getParam("id");
+			var balance = event.target.balance.checked;
 
 			if (event.target.cv.checked) {
-				Meteor.call('SOM:cross-validate', projectId, props);
+				Meteor.call('SOM:cross-validate', projectId, props, balance);
 				M.toast({html: 'Running cross validation', displayLength: 2000});
 			} else {
-				Meteor.call('SOM:compute', projectId, props);
+				Meteor.call('SOM:compute', projectId, props, balance);
 				M.toast({html: 'Model building', displayLength: 2000});
 			}
 	},
