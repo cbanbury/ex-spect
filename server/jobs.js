@@ -19,11 +19,49 @@ Jobs.register({
       // define ids for labels
       var labels = props.labels;
       labels = labels.map(function(item, index) {
-        return {tag: item.tag, id: index}
+        var count = Spectra.find({uid: userId, projectId: projectId, label: item.tag}).count();
+        return {tag: item.tag, id: index, count: count};
       });
+
+      // handle class inbalance
+      var maxCount = Math.max.apply(Math, labels.map(function(item) { return item.count;}));
+      var minCount = Math.min.apply(Math, labels.map(function(item) { return item.count;}));
 
       var spectra = Spectra.find({uid: userId,
           projectId: projectId, label: {$in: props.labels.map((item)=>{return item.tag})}}, {y: 1, label: 1, labelId: 1}).fetch();
+      console.log('spectra before: ' + spectra.legnth);
+      
+      // if (maxCount !== minCount) {
+      //   console.log('fixing class imbalance');
+      //   labels.forEach((item)=>{
+      //     if (item.count < maxCount) {
+      //       console.log('got here ' + item.tag);
+      //       // randomly sample additional maxCount - minCount spectra
+      //       var diff = maxCount - item.count;
+            
+      //       if (diff > item.count) {
+      //         var batches = diff / item.count;
+      //         console.log('need ' + batches);
+      //         for (var i=1; i<Math.floor(batches); i++) {
+      //           temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': item.count}}]);
+      //           spectra.push(temp);
+      //         }
+      //         var remainder = diff % item.count;
+      //         if (remainder > 0) {
+      //           temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': remainder}}]);
+      //           spectra.push(temp);
+      //         }
+      //       } else {
+      //         console.log('only need single batch  ' + diff);
+      //         var temp = Spectra.aggregate([{$match: {uid: userId, projectId: projectId, label: item.tag}}, {$sample: {'size': diff}}]);
+      //         spectra.push(temp);
+      //       }
+      //     }
+      //   });
+      //   console.log('spectra after:' + spectra.length);
+      // }
+
+      return;
 
       var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
       const k = new Kohonen({
