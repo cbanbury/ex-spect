@@ -30,3 +30,11 @@ Visit http://localhost:3000
 1. Click on `MACHINE LEARNING` from the project page an setup parameters for the self organising map. Click `NEW` to build a model with the desired settings.
 1. Once the model is built, click `LOAD` to view the model any toggel between the `CLUSTERING`, `FEATURES` and `CLASSIFICATION` tabs.
 
+# Known issues
+Fix SCSS imports:
+
+```
+cd imports
+ln -s ../node_modules/materialize-css
+```
+
