@@ -27,17 +27,17 @@
 				      	<path
 				      		d={{generateHexagons pos}}
 				      		key={{@index}}
-				      		style='fill:#FFF; stroke:#000; stroke-width:0.2;'
+				      		style='fill:{{hexagonColor pos}}; opacity:{{hexagonOpacity pos}}; stroke:#000; stroke-width:0.2; stroke-opacity: 1;'
 				      	/>
 				      {{/each}}
 				    </g>
 				    <!-- {{#if showSpectra}} -->
-				    <g>
+<!-- 				    <g>
 				    	{{#each circles}}
 				    		<circle class="result" cx="{{x}}" cy="{{y}}" r="{{circleSize}}" fill="{{color}}"></circle>
 				    	{{/each}}
 				    	{{simulate}}
-				    </g>
+				    </g> -->
 				    <!-- {{/if}} -->
 				  </svg>
 				</div>

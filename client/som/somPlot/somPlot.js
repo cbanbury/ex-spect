@@ -100,6 +100,54 @@ Template.somPlot.helpers({
 		const haxagonsByLine = Math.sqrt(Template.instance().data.k.neurons.length);
 		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
+	hexagonColor: function(pos) {
+		var classes = Template.instance().data.k.labelEnum;
+		var positions = Template.instance().data.positions;
+		var matches = positions.filter((item) => {
+			return item[0][0] === pos[0] && item[0][1] === pos[1];
+		});
+
+		if (matches.length === 0) {
+			return '#FFF';
+		}
+
+		var color = '#FFF';
+		var winner = 0;
+		classes.forEach((item) => {
+			var classMatch = matches.filter((match)=>{return match[1].class === item.id});
+			if (classMatch.length > winner) {
+				winner = classMatch.length;
+				color = item.color
+			}
+		});
+
+		return color;
+	},
+	hexagonOpacity: function(pos) {
+		var classes = Template.instance().data.k.labelEnum;
+		var positions = Template.instance().data.positions;
+		var matches = positions.filter((item) => {
+			return item[0][0] === pos[0] && item[0][1] === pos[1];
+		});
+
+		var color = '#FFF';
+		var winner = 0;
+		classes.forEach((item, index) => {
+			var classMatch = matches.filter((match)=>{return match[1].class === item.id});
+			if (classMatch.length > winner) {
+				winner = classMatch.length;
+				//color = item.color
+			}
+		});
+
+		ratio = 1;
+
+		if (matches.length > 0) {
+			var ratio = winner / matches.length;
+		}
+
+		return ratio;
+	},
 	viewBoxSize: function() {
 		return (Math.sqrt(Template.instance().data.k.numNeurons)) * 10 + 10;
 	},
