@@ -48,25 +48,25 @@ Template.somPlot.onCreated(function() {
 	);
 
 	// find circle size based on number of spectra in neuron
-	var positions = Template.instance().data.positions;
-	positions = positions.map((item)=>{return item[0].toString();});
+	// var positions = Template.instance().data.positions;
+	// positions = positions.map((item)=>{return item[0].toString();});
 
-	var count = {};
-	var max = 0;
-	positions.forEach((item)=>{
-		if (!count[item]) {
-			count[item] = 1
-		} else {
-			count[item] += 1
-		}
-		if (count[item] > max) {
-			max = count[item];
-		}
-	});
+	// var count = {};
+	// var max = 0;
+	// positions.forEach((item)=>{
+	// 	if (!count[item]) {
+	// 		count[item] = 1
+	// 	} else {
+	// 		count[item] += 1
+	// 	}
+	// 	if (count[item] > max) {
+	// 		max = count[item];
+	// 	}
+	// });
 
-	const hexagonRadius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
+	// const hexagonRadius = (Template.instance().stepX / 2) / Math.cos(Math.PI / 6);
 
-	this.scaleFactor = Math.sqrt(0.4 * Math.pow(hexagonRadius, 2) / max);
+	// this.scaleFactor = Math.sqrt(0.4 * Math.pow(hexagonRadius, 2) / max);
 });
 
 Template.somPlot.onRendered(function() {
@@ -97,56 +97,118 @@ Template.somPlot.helpers({
 		return false;
 	},
 	neurons: function() {
-		const haxagonsByLine = Math.sqrt(Template.instance().data.k.neurons.length);
-		return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
+		return Template.instance().data.k.neurons;
+		// return hexagonHelper.generateGrid(haxagonsByLine, haxagonsByLine);
 	},
-	hexagonColor: function(pos) {
+	hexagonColor: function(hits) {
 		var classes = Template.instance().data.k.labelEnum;
-		var positions = Template.instance().data.positions;
-		var matches = positions.filter((item) => {
-			return item[0][0] === pos[0] && item[0][1] === pos[1];
-		});
+		var color = '#FFF';
 
-		if (matches.length === 0) {
+		function convertHex(hex,opacity){
+		    hex = hex.replace('#','');
+		    r = parseInt(hex.substring(0,2), 16);
+		    g = parseInt(hex.substring(2,4), 16);
+		    b = parseInt(hex.substring(4,6), 16);
+
+		    return [r, g, b];
+		}
+
+		function componentToHex(c) {
+			c = Math.floor(c);
+  			var hex = c.toString(16);
+  			return hex.length == 1 ? "0" + hex : hex;
+		}
+
+		function rgbToHex(color) {
+			var r = color[0]; g = color[1]; b = color[2];
+  			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+		}
+		var max = Math.max(...hits);
+		if (max === 0) {
 			return '#FFF';
 		}
 
-		var color = '#FFF';
-		var winner = 0;
-		classes.forEach((item) => {
-			var classMatch = matches.filter((match)=>{return match[1].class === item.id});
-			if (classMatch.length > winner) {
-				winner = classMatch.length;
-				color = item.color
-			}
+		var total = 0;
+		hits.forEach((item) =>{
+			total += item
 		});
+		
+		var mixed = [0, 0, 0];
+		classes.forEach((item) => {
+			var ratio = hits[item.id] / total;
+			var rgb = convertHex(item.color);
+			// console.log(rgb);
+			mixed.forEach((item, index) => {
+				mixed[index] += ratio * rgb[index]
+			})
+		});
+		// console.log(mixed);
+		// console.log(rgbToHex(mixed));
+
+		console.log(mixed);
+		console.log(rgbToHex(mixed));
+		return rgbToHex(mixed);
+
+		var max = Math.max(...hits);
+		if (max === 0) {
+			return color;
+		}
+		
+
+		var total = 0;
+		hits.forEach((item) =>{
+			total += item
+		});
+		var ratio = max / total;
+		if (ratio < 0.5) {
+			return '#FFF';
+		}
+
+		var winningIndex = hits.indexOf(max);
+		var res = classes.filter((item) => {
+			return item.id === winningIndex;
+		});
+
+		if (res[0] && res[0].color) {
+			return res[0].color;
+		}
 
 		return color;
 	},
-	hexagonOpacity: function(pos) {
-		var classes = Template.instance().data.k.labelEnum;
-		var positions = Template.instance().data.positions;
-		var matches = positions.filter((item) => {
-			return item[0][0] === pos[0] && item[0][1] === pos[1];
-		});
-
-		var color = '#FFF';
+	hexagonOpacity: function(hits) {
+		var total = 0;
 		var winner = 0;
-		classes.forEach((item, index) => {
-			var classMatch = matches.filter((match)=>{return match[1].class === item.id});
-			if (classMatch.length > winner) {
-				winner = classMatch.length;
-				//color = item.color
+		hits.forEach((item) =>{
+			total += item
+			if (item > winner) {
+				winner = item;
 			}
 		});
-
-		ratio = 1;
-
-		if (matches.length > 0) {
-			var ratio = winner / matches.length;
+		if (winner === total) {
+			return 0.8;
 		}
 
-		return ratio;
+		return 0.5;
+
+
+		var ratio = winner / total;
+
+		if (ratio < 0.5) {
+			return 0.2;
+		}
+
+		// return ratio - 0.3;
+		// if (ratio < 0.5) {
+		// 	return ratio
+		// }
+
+		var opacity = 0.2 + (winner * 0.01);
+
+		if (opacity > 0.8) {
+			opacity = 0.8;
+		}
+
+		return opacity;
 	},
 	viewBoxSize: function() {
 		return (Math.sqrt(Template.instance().data.k.numNeurons)) * 10 + 10;

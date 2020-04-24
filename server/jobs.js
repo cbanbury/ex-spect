@@ -67,39 +67,49 @@ Jobs.register({
       }
 
       var neurons = hexagonHelper.generateGrid(props.gridSize, props.gridSize);
+      var steps = props.steps * spectra.length;
       const k = new Kohonen({
         data: _.map(_.get('y'), spectra),
         labels: mapLabels(spectra, labels),
         labelEnum: labels,
         neurons,
-        maxStep: props.steps * spectra.length,
+        maxStep: steps,
         maxLearningCoef: props.learningRate,
-        minLearningCoef: 0.00001,
+        minLearningCoef: 0.0001,
         maxNeighborhood: props.gridSize * (2 / 3),
         minNeighborhood: 0.1,
-        distance: 'manhattan',
+        distance: 'cosine',
+        // class_method: 'hits',
         norm: 'zscore'
       });
 
       console.log('Starting learning');
 
+      var previous = 0;
       k.learn((neurons, step)=>{
-        console.log(step)
+        var percent = Math.round((step / steps)*100);
+        if (percent % 5 === 0 && percent !== previous) {
+          console.log(percent);
+          previous = percent;
+        } 
       });
+
       if (props.lvq) {
         k.LVQ();
       }
+
       console.log('Finished learning');
 
-      console.log('Saving model');
+      console.log('Mapping');
       var mapping = k.mapping();
+      
+      console.log('Saving model');
       var model = k.export();
       delete model._data;
       SOM.update({_id: somID}, {$set: {
           status: 100,
           completed_at: new Date(),
           model: model,
-          positions: mapping,
           lvq: props.lvq
         }
       });
@@ -162,10 +172,10 @@ Jobs.register({
           neurons,
           maxStep: props.steps * trainFeatures.length, // TODO: undo fixing this
           maxLearningCoef: props.learningRate,
-          minLearningCoef: 0.001,
+          minLearningCoef: 0.0001,
           maxNeighborhood: props.gridSize * (2 / 3),
           minNeighborhood: 0.1,
-          // distance: 'manhattan',
+          distance: 'cosine',
           norm: 'zscore'
         });
 
@@ -177,7 +187,7 @@ Jobs.register({
         console.log('Finished fold');
         return k._predict(testFeatures);
     });
-    console.log('Finished cross validation');
+    console.log('Finished cross validation: ' + confusionMatrix.getAccuracy());
     var doc = {
       accuracy: confusionMatrix.getAccuracy(),
       confusionMatrix: confusionMatrix.getMatrix()
