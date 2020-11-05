@@ -4,6 +4,7 @@ Template.somdi.onCreated(function () {
 	// remember arrow functions do not bind this!
 	this.autorun(()=>{
 		this.somdi = new ReactiveVar();
+		var template = Template.instance();
 
 		Meteor.call('SOM:getX', FlowRouter.getParam("id"), (err, x)=> {
 			var out = [];
@@ -18,6 +19,8 @@ Template.somdi.onCreated(function () {
 					name: label.tag
 				});
 			});
+
+			template.somdi.set(out);
 
 			var layout = {
 			    autosize: true,
@@ -56,3 +59,40 @@ Template.somdi.onCreated(function () {
 		})
 	});
 });
+
+Template.somdi.events({
+	'click .export': function(event) {
+		event.preventDefault();
+
+		var somdi = Template.instance().somdi.get();
+		var columns = 0;
+
+		// set headers
+		var headers = 'Raman Shift (cm^-1)'
+		somdi.forEach(item=>{
+			columns++;
+			headers = headers + ',' + item.name;
+		});
+		headers = headers + '\r\n';
+
+
+		let csvContent = "data:text/csv;charset=utf-8,";
+		csvContent = csvContent + headers;
+
+		if (columns > 0) {
+			var x = somdi[0].x;
+
+			for (var j=0; j<x.length; j++) {
+				var row = x[j].toString();
+				for (var i=0; i<columns; i++) {
+					row = row + ',' + somdi[i].y[j];
+				}
+
+				csvContent += row + '\r\n';
+			}
+
+			var encodedUri = encodeURI(csvContent);
+			window.open(encodedUri);
+		}
+	}
+})

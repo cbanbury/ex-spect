@@ -137,16 +137,11 @@ Template.somPlot.helpers({
 		classes.forEach((item) => {
 			var ratio = hits[item.id] / total;
 			var rgb = convertHex(item.color);
-			// console.log(rgb);
 			mixed.forEach((item, index) => {
 				mixed[index] += ratio * rgb[index]
 			})
 		});
-		// console.log(mixed);
-		// console.log(rgbToHex(mixed));
 
-		console.log(mixed);
-		console.log(rgbToHex(mixed));
 		return rgbToHex(mixed);
 
 		var max = Math.max(...hits);
